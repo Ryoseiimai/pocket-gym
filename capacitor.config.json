@@ -1,0 +1,9 @@
+{
+  "appId": "jp.co.ryoseiworld.pocketgym",
+  "appName": "ポケットジム",
+  "webDir": "www-ios",
+  "ios": {
+    "preferredContentMode": "mobile",
+    "contentInset": "never"
+  }
+}
