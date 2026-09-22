@@ -31,15 +31,16 @@ def main():
           const state = emptyState();
           state.profile = {goal:'tighten', experience:'beginner', place:'home-none',
             daysPerWeek:3, minutes:15, onboarded:true};
-          // Six completed sessions across fourteen days; rest days between workouts.
-          for (const [i, date] of ['2026-09-09','2026-09-11','2026-09-14',
-                                  '2026-09-16','2026-09-19','2026-09-22'].entries()) {
+          // Ten synthetic sessions in fourteen days, using one unchanged profile.
+          // The first six charted exercises each occur at least twice.
+          for (const date of ['2026-09-09','2026-09-10','2026-09-12','2026-09-13',
+                             '2026-09-14','2026-09-16','2026-09-17','2026-09-18',
+                             '2026-09-19','2026-09-22']) {
             const menu = generateMenu(state.profile, date, state.exerciseState);
             const feels = {};
-            for (const [j, item] of menu.entries()) {
-              const ratings = Array.from({length:item.sets}, (_, k) =>
-                item.phase !== 'main' ? 'ok' :
-                i === 0 || i === 3 ? 'easy' : i === 2 && j % 2 === 0 && k === 2 ? 'hard' : 'ok');
+            for (const item of menu) {
+              const ratings = Array.from({length:item.sets}, () =>
+                item.phase !== 'main' ? 'ok' : 'easy');
               feels[item.exerciseId] = ratings;
               for (const feel of ratings) state.logs.push({date, exerciseId:item.exerciseId,
                 feel, count:item.amount});
@@ -84,13 +85,25 @@ def main():
         seed(state)  # Discard the partial demonstration session before showing history.
         page.get_by_role('button', name='振り返り', exact=True).click()
         page.locator('.chart-list svg').first.wait_for()
+        charts = page.locator('.chart-item').evaluate_all('''items => items
+          .filter(e => e.getBoundingClientRect().top < innerHeight - 70)
+          .map(e => ({name:e.querySelector('.chart-title').textContent,
+            points:[...e.querySelectorAll('circle')].map(p =>
+              ({x:Number(p.getAttribute('cx')),y:Number(p.getAttribute('cy'))}))}))''')
+        assert charts, 'No visible charts'
+        for chart in charts:
+            points = chart['points']
+            assert len(points) >= 2, chart
+            assert points[-1]['y'] < points[0]['y'], chart
+            assert all(b['x'] > a['x'] and b['y'] <= a['y']
+                       for a, b in zip(points, points[1:])), chart
         shot('05_reflection.png')
         assert not errors, errors
         (BASE / 'capture-info.json').write_text(json.dumps({
             'url': URL, 'date': TODAY, 'browser': browser.version,
             'viewport': {'width':440, 'height':956}, 'deviceScaleFactor':3,
             'sessions': len(state['sessions']), 'logs':len(state['logs']),
-            'consoleErrors':errors, 'syntheticData':True
+            'consoleErrors':errors, 'syntheticData':True, 'visibleCharts':charts
         }, ensure_ascii=False, indent=2) + '\n')
         browser.close()
 
