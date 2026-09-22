@@ -12,6 +12,7 @@ on:
 
 permissions:
   contents: write
+  issues: write # 失敗時に needs-human の Issue を立てるため（無いと黙って失敗する）
 
 concurrency:
   group: autopilot-announce
