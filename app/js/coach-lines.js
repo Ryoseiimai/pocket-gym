@@ -9,8 +9,8 @@ import { hashString } from "./menu.js";
 const LINES = {
   greeting: {
     mochimaru: [
-      { id: "greeting-mochimaru-1", text: "今日のメニューができたのだ!いっしょにがんばろう" },
-      { id: "greeting-mochimaru-2", text: "おかえりなのだ!今日はどこまでいけるかな" },
+      { id: "greeting-mochimaru-1", text: "今日のメニューができたのだ！いっしょにがんばろう" },
+      { id: "greeting-mochimaru-2", text: "おかえりなのだ！今日はどこまでいけるかな" },
     ],
     purun: [
       { id: "greeting-purun-1", text: "おかえりなさい。今日のメニュー、準備できましたよ" },
@@ -23,8 +23,8 @@ const LINES = {
   },
   workoutStart: {
     mochimaru: [
-      { id: "workoutStart-mochimaru-1", text: "スタートなのだ!まずは体をほぐしていくのだ" },
-      { id: "workoutStart-mochimaru-2", text: "よーし、いくのだ!最初の種目からいくよ" },
+      { id: "workoutStart-mochimaru-1", text: "スタートなのだ！まずは体をほぐしていくのだ" },
+      { id: "workoutStart-mochimaru-2", text: "よーし、いくのだ！最初の種目からいくよ" },
     ],
     purun: [
       { id: "workoutStart-purun-1", text: "それでは始めましょう。呼吸を止めずにゆっくりでいいですよ" },
@@ -37,8 +37,8 @@ const LINES = {
   },
   setCompleteEasy: {
     mochimaru: [
-      { id: "setCompleteEasy-mochimaru-1", text: "楽勝だったのだ!次もその調子なのだ" },
-      { id: "setCompleteEasy-mochimaru-2", text: "余裕そうなのだ!いいペースだよ" },
+      { id: "setCompleteEasy-mochimaru-1", text: "楽勝だったのだ！次もその調子なのだ" },
+      { id: "setCompleteEasy-mochimaru-2", text: "余裕そうなのだ！いいペースだよ" },
     ],
     purun: [
       { id: "setCompleteEasy-purun-1", text: "楽にできたんですね、よかったです" },
@@ -46,12 +46,12 @@ const LINES = {
     ],
     koron: [
       { id: "setCompleteEasy-koron-1", text: "楽だったなら、次はもう少し攻めてもいいかもね" },
-      { id: "setCompleteEasy-koron-2", text: "余裕そうね。ちゃんと効かせられてる?" },
+      { id: "setCompleteEasy-koron-2", text: "余裕そうね。ちゃんと効かせられてる？" },
     ],
   },
   setCompleteOk: {
     mochimaru: [
-      { id: "setCompleteOk-mochimaru-1", text: "ちょうどいい感じなのだ!いいぞいいぞ" },
+      { id: "setCompleteOk-mochimaru-1", text: "ちょうどいい感じなのだ！いいぞいいぞ" },
       { id: "setCompleteOk-mochimaru-2", text: "そのペースで合ってるのだ、続けよう" },
     ],
     purun: [
@@ -65,7 +65,7 @@ const LINES = {
   },
   setCompleteHard: {
     mochimaru: [
-      { id: "setCompleteHard-mochimaru-1", text: "きつかったのだ!よくがんばったのだ" },
+      { id: "setCompleteHard-mochimaru-1", text: "きつかったのだ！よくがんばったのだ" },
       { id: "setCompleteHard-mochimaru-2", text: "しんどかったね、でもちゃんとやりきったのだ" },
     ],
     purun: [
@@ -79,7 +79,7 @@ const LINES = {
   },
   restStart: {
     mochimaru: [
-      { id: "restStart-mochimaru-1", text: "休憩なのだ!水分もとって一息つくのだ" },
+      { id: "restStart-mochimaru-1", text: "休憩なのだ！水分もとって一息つくのだ" },
       { id: "restStart-mochimaru-2", text: "ここで一休みなのだ、しっかり休もう" },
     ],
     purun: [
@@ -93,8 +93,8 @@ const LINES = {
   },
   restAlmostDone: {
     mochimaru: [
-      { id: "restAlmostDone-mochimaru-1", text: "もうすぐ再開なのだ!心の準備をするのだ" },
-      { id: "restAlmostDone-mochimaru-2", text: "あと少しで休憩終わりなのだ、いくよ!" },
+      { id: "restAlmostDone-mochimaru-1", text: "もうすぐ再開なのだ！心の準備をするのだ" },
+      { id: "restAlmostDone-mochimaru-2", text: "あと少しで休憩終わりなのだ、いくよ！" },
     ],
     purun: [
       { id: "restAlmostDone-purun-1", text: "もうすぐ再開ですよ。ゆっくり準備してくださいね" },
@@ -107,8 +107,8 @@ const LINES = {
   },
   restEnd: {
     mochimaru: [
-      { id: "restEnd-mochimaru-1", text: "休憩終わりなのだ!次のセット、いくのだ" },
-      { id: "restEnd-mochimaru-2", text: "再開なのだ!体は温まったかな" },
+      { id: "restEnd-mochimaru-1", text: "休憩終わりなのだ！次のセット、いくのだ" },
+      { id: "restEnd-mochimaru-2", text: "再開なのだ！体は温まったかな" },
     ],
     purun: [
       { id: "restEnd-purun-1", text: "休憩終わりです。無理のない範囲で再開しましょう" },
@@ -121,8 +121,8 @@ const LINES = {
   },
   allDone: {
     mochimaru: [
-      { id: "allDone-mochimaru-1", text: "全部終わったのだ!今日もお疲れさまなのだ!" },
-      { id: "allDone-mochimaru-2", text: "やりきったのだ!すごいぞ、今日のがんばりなのだ" },
+      { id: "allDone-mochimaru-1", text: "全部終わったのだ！今日もお疲れさまなのだ！" },
+      { id: "allDone-mochimaru-2", text: "やりきったのだ！すごいぞ、今日のがんばりなのだ" },
     ],
     purun: [
       { id: "allDone-purun-1", text: "今日の分、全部終わりましたね。お疲れさまでした" },
@@ -135,7 +135,7 @@ const LINES = {
   },
   reflect: {
     mochimaru: [
-      { id: "reflect-mochimaru-1", text: "ここまでの記録、見てみるのだ!積み重ねてきたのだ" },
+      { id: "reflect-mochimaru-1", text: "ここまでの記録、見てみるのだ！積み重ねてきたのだ" },
       { id: "reflect-mochimaru-2", text: "続けてきた分だけ記録が伸びてるのだ、いいぞ" },
     ],
     purun: [

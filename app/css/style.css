@@ -386,6 +386,7 @@ body {
 
 .speech-bubble {
   flex: 1;
+  min-width: 0; /* flexアイテムの既定min-widthのせいで375px幅から吹き出しがはみ出すのを防ぐ */
   margin: 0;
   padding: 10px 12px;
   border-radius: 14px;
@@ -393,6 +394,18 @@ body {
   border: 1px solid var(--border);
   font-size: 14px;
   line-height: 1.4;
+  overflow-wrap: break-word;
+}
+
+/* 全種目完了のお祝いは、アバターを大きくして縦に並べる(横並びだと375px幅で窮屈なため)。 */
+.coach-row-celebrate {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.coach-row-celebrate .speech-bubble {
+  width: 100%;
 }
 
 /* ぷにっと弾む軽いアニメーション。読み込み時のちらつきを避けるため縦方向だけを動かす。 */
@@ -406,13 +419,30 @@ body {
   }
 }
 
+/* お祝い時だけ、もう少し大きく弾ませる */
+@keyframes coach-bounce-big {
+  0%,
+  100% {
+    transform: scale(1, 1) translateY(0);
+  }
+  50% {
+    transform: scale(1.08, 0.9) translateY(-10px);
+  }
+}
+
 .coach-bounce {
   animation: coach-bounce 1.8s ease-in-out infinite;
   transform-origin: 50% 100%;
 }
 
+.coach-avatar-celebrate.coach-bounce {
+  animation-name: coach-bounce-big;
+  animation-duration: 1.3s;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .coach-bounce {
+  .coach-bounce,
+  .coach-avatar-celebrate.coach-bounce {
     animation: none;
   }
 }
