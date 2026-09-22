@@ -61,6 +61,9 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }} # 定額プラン(Max)。API従量課金は使わない
+          # collect.yml が `gh workflow run` で起動するため actor は github-actions[bot] になる。
+          # これを許可しないと非人間アクターとして拒否される（claude-code-actionの新しい安全策）。
+          allowed_bots: "github-actions"
           claude_args: --allowedTools "Bash(git:*),Bash(gh:*),Bash(node:*),Edit,Write,Read,Glob,Grep,MultiEdit"
           prompt: |
             あなたは公開OSS「ポケットジム」(https://ryoseiimai.github.io/pocket-gym/) の改善担当です。
