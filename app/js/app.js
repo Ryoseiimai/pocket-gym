@@ -1,5 +1,5 @@
 import { el, clear, svgEl } from "./dom.js";
-import { loadState, saveState, validateImport, defaultProfile, emptyState, MAX_STRING_LEN } from "./store.js";
+import { loadState, saveState, validateImport, defaultProfile, emptyState, MAX_BYTES } from "./store.js";
 import { exerciseById } from "./exercises.js";
 import { generateMenu } from "./menu.js";
 import { applySessionResults } from "./progress.js";
@@ -16,6 +16,7 @@ const FEEL_LABELS = { easy: "楽", ok: "ちょうど", hard: "きつい" };
 let state = loadState();
 let currentTab = "today";
 let onboardingDraft = defaultProfile();
+let settingsDraft = null;
 let workout = null; // { menu, index, feelsByExerciseId, resting, restRemaining, timerId }
 let importError = "";
 let resetConfirmStep = 0;
@@ -32,7 +33,7 @@ function todayStr() {
 
 function persist() {
   const ok = saveState(state);
-  if (!ok) window.alert("データサイズが上限(4MB)を超えたため保存できませんでした。");
+  if (!ok) window.alert("保存できませんでした。容量不足やプライベートブラウズなど、ブラウザの保存制限が原因の可能性があります。");
 }
 
 function setState(patch) {
@@ -42,6 +43,7 @@ function setState(patch) {
 }
 
 function switchTab(tab) {
+  if (tab === "settings" && currentTab !== "settings") settingsDraft = null;
   currentTab = tab;
   renderApp();
 }
@@ -54,14 +56,14 @@ function notice(text) {
 function radioGroup(name, options, current, onChange) {
   return el(
     "div",
-    { className: "radio-group", role: "radiogroup" },
+    { className: "radio-group", role: "group", "aria-label": name },
     options.map(([value, label]) =>
       el(
         "button",
         {
           type: "button",
           className: "choice" + (current === value ? " choice-selected" : ""),
-          "aria-pressed": current === value,
+          "aria-pressed": String(current === value),
           onClick: () => onChange(value),
         },
         label
@@ -76,23 +78,23 @@ function renderCounselingForm(draft, onSubmit, submitLabel) {
     el("h2", {}, "カウンセリング"),
     notice("入力内容はいつでも設定タブから変更できます。"),
     el("label", { className: "field-label" }, "目的"),
-    radioGroup(Object.keys(GOAL_LABELS).join("-"), Object.entries(GOAL_LABELS), draft.goal, (v) => {
+    radioGroup("目的", Object.entries(GOAL_LABELS), draft.goal, (v) => {
       draft.goal = v;
       renderApp();
     }),
     el("label", { className: "field-label" }, "経験"),
-    radioGroup("experience", Object.entries(EXPERIENCE_LABELS), draft.experience, (v) => {
+    radioGroup("経験", Object.entries(EXPERIENCE_LABELS), draft.experience, (v) => {
       draft.experience = v;
       renderApp();
     }),
     el("label", { className: "field-label" }, "場所と器具"),
-    radioGroup("place", Object.entries(PLACE_LABELS), draft.place, (v) => {
+    radioGroup("場所と器具", Object.entries(PLACE_LABELS), draft.place, (v) => {
       draft.place = v;
       renderApp();
     }),
     el("label", { className: "field-label" }, "週の回数"),
     radioGroup(
-      "days",
+      "週の回数",
       [
         [2, "週2回"],
         [3, "週3回"],
@@ -106,7 +108,7 @@ function renderCounselingForm(draft, onSubmit, submitLabel) {
     ),
     el("label", { className: "field-label" }, "1回の時間"),
     radioGroup(
-      "minutes",
+      "1回の時間",
       [
         [15, "15分"],
         [30, "30分"],
@@ -370,7 +372,9 @@ function download(filename, text) {
 }
 
 function renderSettings() {
-  const profileDraft = state.profile ? { ...state.profile } : defaultProfile();
+  if (settingsDraft === null) {
+    settingsDraft = state.profile ? { ...state.profile } : defaultProfile();
+  }
 
   const dangerZone = el("div", { className: "danger-zone" }, [
     el("h3", {}, "データ"),
@@ -382,12 +386,19 @@ function renderSettings() {
       },
       "JSONエクスポート"
     ),
+    el("h3", {}, "JSONインポート（バックアップから復元）"),
     el("input", {
       type: "file",
+      "aria-label": "JSONインポート（バックアップから復元）",
       accept: "application/json",
       onChange: (e) => {
         const file = e.target.files && e.target.files[0];
         if (!file) return;
+        if (file.size > MAX_BYTES) {
+          importError = "ファイルが大きすぎます(4MBまで)";
+          renderApp();
+          return;
+        }
         const reader = new FileReader();
         reader.onload = () => {
           try {
@@ -399,6 +410,7 @@ function renderSettings() {
               return;
             }
             state = result.data;
+            settingsDraft = null;
             importError = "";
             persist();
             renderApp();
@@ -432,6 +444,7 @@ function renderSettings() {
               className: "danger-btn",
               onClick: () => {
                 state = emptyState();
+                settingsDraft = null;
                 persist();
                 resetConfirmStep = 0;
                 onboardingDraft = defaultProfile();
@@ -457,15 +470,17 @@ function renderSettings() {
   return el("div", { className: "card" }, [
     el("h2", {}, "設定"),
     renderCounselingForm(
-      profileDraft,
+      settingsDraft,
       (profile) => {
         state = { ...state, profile };
+        settingsDraft = null;
         persist();
         renderApp();
       },
       "この内容で保存"
     ),
     el("p", { className: "disclaimer" }, "このアプリは医療・診断の助言はしません。痛みが出たらすぐに中止し、持病がある方は医師に相談してください。"),
+    el("hr"),
     dangerZone,
   ]);
 }
@@ -481,6 +496,7 @@ function renderTabBar() {
         {
           type: "button",
           className: "tab-btn" + (currentTab === tab ? " tab-btn-active" : ""),
+          "aria-current": currentTab === tab ? "page" : null,
           onClick: () => switchTab(tab),
         },
         TAB_LABELS[tab]
