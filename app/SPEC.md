@@ -55,6 +55,15 @@ JSONエクスポート/インポート（スキーマ検証、失敗時は上書
 1種目 = `{ id, name, bodyPart, equipment: ['none'|'dumbbell'|'gym'], difficulty: 1-3, unit: 'reps'|'seconds', points: [string,string,string], easierId, harderId }`。
 自宅・器具なしだけで週3回組める量として最低25種目以上を収録。`CONTRIBUTING.md` に追加方法を書く。
 
+### 8. コーチキャラクター(`js/coach-art.js` / `js/coach-lines.js` / `js/coach-voice.js`)
+- 丸くてぷにっとしたオリジナルキャラを3体(`js/coach-art.js`の`COACHES`)、初回カウンセリングの最初と設定タブで選べる。
+  他社キャラクターの見た目(丸い体型・差し色の手足・特定の目の形・双子の頭飾り等)は真似ない。SVGはすべて`svgEl()`でコードから組み立てる。
+- 表情は`normal`/`smile`/`ganbare`の3種類。CSSで軽い「ぷにっ」と弾むアニメーションを付け、`prefers-reduced-motion`では止める。
+- セリフは`js/coach-lines.js`に「場面×コーチ×2通り」を持ち、日付や回数から導いた決定的なシード(乱数不使用、`menu.js`の`hashString`を再利用)で選ぶ。
+  しゃべる場面: 今日の画面のあいさつ・トレーニング開始・セット完了(楽/ちょうど/きつい)・休憩開始・残り10秒・休憩終了・全種目完了・振り返り。医療・効果の断定はしない。
+- 声はローカルの VOICEVOX(ずんだもん)で`scripts/gen-voices.mjs`が事前生成した`voice/<coachId>/<lineId>.m4a`を`js/coach-voice.js`が再生する。ファイルが無い/再生失敗時は文字表示のみで進める。
+- プロフィールに`coachId`(既定`mochimaru`)と`voiceOn`(既定`true`)を持つ。`store.js`は無効/不在の`coachId`を`mochimaru`にフォールバックし、旧バージョンのデータも読める。
+
 ## 画面構成
 下タブ4つ: `今日` `記録` `振り返り` `設定`。
 
@@ -71,8 +80,12 @@ js/exercises.js   (種目データ)
 js/menu.js        (今日のメニュー生成・決定的ルール)
 js/progress.js    (セット記録からの自動調整ルール)
 js/stats.js       (週次集計・streak・SVG折れ線用の座標計算)
+js/coach-art.js   (コーチのSVGをコードで組み立てる)
+js/coach-lines.js (コーチのセリフ集・決定的な選択ロジック)
+js/coach-voice.js (コーチの声の再生・iOS解錠)
 js/app.js         (状態・ルーティング・描画)
 manifest.webmanifest / icon.svg
+voice/            (VOICEVOXで事前生成した <coachId>/<lineId>.m4a。voice/README.md に利用規約の注意)
 README.md / LICENSE(MIT) / SECURITY.md / CONTRIBUTING.md / .github/
 tests/            (node:test で menu.js / progress.js / store.js の単体テスト。ブラウザ不要)
 ```

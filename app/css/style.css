@@ -332,3 +332,87 @@ body {
   color: var(--accent);
   font-weight: bold;
 }
+
+/* ---------- コーチ ---------- */
+.coach-picker {
+  margin-bottom: 8px;
+}
+
+.coach-options {
+  justify-content: space-between;
+}
+
+.coach-option {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  padding: 10px 6px;
+  border-radius: 12px;
+  border: 2px solid var(--border);
+  background: var(--bg);
+  color: var(--fg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.coach-option-selected {
+  border-color: var(--accent);
+  background: var(--card-bg);
+}
+
+.coach-option-name {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.coach-option-tagline {
+  color: var(--fg-muted);
+  font-size: 13px;
+  margin: 4px 0 16px;
+}
+
+.coach-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0 16px;
+}
+
+.coach-avatar {
+  flex: 0 0 auto;
+}
+
+.speech-bubble {
+  flex: 1;
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* ぷにっと弾む軽いアニメーション。読み込み時のちらつきを避けるため縦方向だけを動かす。 */
+@keyframes coach-bounce {
+  0%,
+  100% {
+    transform: scale(1, 1) translateY(0);
+  }
+  50% {
+    transform: scale(1.03, 0.97) translateY(-2px);
+  }
+}
+
+.coach-bounce {
+  animation: coach-bounce 1.8s ease-in-out infinite;
+  transform-origin: 50% 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .coach-bounce {
+    animation: none;
+  }
+}

@@ -5,6 +5,9 @@ import { generateMenu } from "./menu.js";
 import { applySessionResults } from "./progress.js";
 import { weeklySessionCount, currentStreak, levelHistoryFor, toSvgPoints, totalSetsByExercise } from "./stats.js";
 import { haptic, keepAwake } from "./native.js";
+import { COACHES, coachSvg } from "./coach-art.js";
+import { pickLine } from "./coach-lines.js";
+import { unlockVoice, playLine } from "./coach-voice.js";
 
 const TABS = ["today", "log", "reflect", "settings"];
 const TAB_LABELS = { today: "今日", log: "記録", reflect: "振り返り", settings: "設定" };
@@ -21,6 +24,7 @@ let settingsDraft = null;
 let workout = null; // { menu, index, feelsByExerciseId, resting, restRemaining, timerId }
 let importError = "";
 let resetConfirmStep = 0;
+let coachSpeech = null; // { coachId, expression, text } コーチが今しゃべっているセリフ
 
 const root = document.getElementById("app");
 
@@ -43,15 +47,41 @@ function setState(patch) {
   renderApp();
 }
 
+// ---------- コーチ ----------
+// 場面ごとに1つセリフを選び、文字(coachSpeech)と音声を同時に更新する。
+// seed には日付や回数などを渡し、乱数を使わず決定的に選ぶ(coach-lines.js 側の方針)。
+function say(scene, seed, expression = "normal") {
+  const coachId = state.profile && state.profile.coachId;
+  if (!coachId) return null;
+  const line = pickLine(scene, coachId, seed);
+  if (!line) return null;
+  coachSpeech = { coachId, expression, text: line.text };
+  playLine(coachId, line.id, state.profile.voiceOn !== false);
+  return coachSpeech;
+}
+
 function switchTab(tab) {
   if (tab === "settings" && currentTab !== "settings") settingsDraft = null;
   currentTab = tab;
+  if (state.profile && state.profile.onboarded && !workout) {
+    if (tab === "today") say("greeting", todayStr(), "normal");
+    else if (tab === "reflect") say("reflect", todayStr(), "normal");
+  }
   renderApp();
 }
 
 // ---------- 共通パーツ ----------
 function notice(text) {
   return el("p", { className: "notice" }, text);
+}
+
+// コーチのアバター+ふきだし。textNode を渡すと(休憩タイマーのように)フル再描画せずに
+// そのDOM要素のテキストだけを直接書き換えたい場面で使い回せる。
+function coachRow(textNode) {
+  if (!coachSpeech) return null;
+  const bubble = textNode || el("p", { className: "speech-bubble" }, coachSpeech.text);
+  if (textNode) bubble.textContent = coachSpeech.text;
+  return el("div", { className: "coach-row" }, [coachSvg(coachSpeech.coachId, coachSpeech.expression, { size: 56 }), bubble]);
 }
 
 function radioGroup(name, options, current, onChange) {
@@ -73,11 +103,54 @@ function radioGroup(name, options, current, onChange) {
   );
 }
 
+// コーチ3体を横に並べて選ぶ。ボタンの表示テキストはコーチ名だけにし(タップ判定を単純に保つ)、
+// 選んでいるコーチのひとことは picker の下に別要素で出す。
+function coachPicker(current, onChange) {
+  const picked = COACHES.find((c) => c.id === current) || COACHES[0];
+  return el("div", { className: "coach-picker" }, [
+    el(
+      "div",
+      { className: "radio-group coach-options", role: "group", "aria-label": "コーチ" },
+      COACHES.map((c) =>
+        el(
+          "button",
+          {
+            type: "button",
+            className: "coach-option" + (current === c.id ? " coach-option-selected" : ""),
+            "aria-pressed": String(current === c.id),
+            onClick: () => onChange(c.id),
+          },
+          [coachSvg(c.id, "smile", { size: 64 }), el("span", { className: "coach-option-name" }, c.name)]
+        )
+      )
+    ),
+    el("p", { className: "coach-option-tagline" }, `${picked.personality}: ${picked.tagline}`),
+  ]);
+}
+
 // ---------- 初回カウンセリング / 設定フォーム ----------
 function renderCounselingForm(draft, onSubmit, submitLabel) {
   return el("div", { className: "card" }, [
     el("h2", {}, "カウンセリング"),
     notice("入力内容はいつでも設定タブから変更できます。"),
+    el("label", { className: "field-label" }, "コーチを選ぶ"),
+    coachPicker(draft.coachId, (v) => {
+      draft.coachId = v;
+      renderApp();
+    }),
+    el("label", { className: "field-label" }, "声"),
+    radioGroup(
+      "声",
+      [
+        [true, "オン"],
+        [false, "オフ"],
+      ],
+      draft.voiceOn,
+      (v) => {
+        draft.voiceOn = v;
+        renderApp();
+      }
+    ),
     el("label", { className: "field-label" }, "目的"),
     radioGroup("目的", Object.entries(GOAL_LABELS), draft.goal, (v) => {
       draft.goal = v;
@@ -142,6 +215,7 @@ function startWorkout() {
   const menu = menuForToday();
   if (menu.length === 0) return;
   workout = { menu, index: 0, setIndex: 0, feelsByExerciseId: {}, resting: false, restRemaining: 0, timerId: null };
+  say("workoutStart", todayStr(), "ganbare");
   void keepAwake(true);
   renderApp();
 }
@@ -154,6 +228,7 @@ function stopTimer() {
   if (workout && workout.resting) {
     const item = workout.menu[workout.index];
     workout.restMessage = `休憩終了。次は${exerciseById(item.exerciseId).name} セット${workout.setIndex + 1}`;
+    say("restEnd", `${todayStr()}-${workout.index}-${workout.setIndex}`, "normal");
   }
 }
 
@@ -168,6 +243,10 @@ function completeSet(feel) {
   const logs = [...state.logs, { date, exerciseId: item.exerciseId, feel, count: item.amount }];
   state = { ...state, logs };
   persist();
+
+  const totalSets = Object.values(workout.feelsByExerciseId).reduce((sum, arr) => sum + arr.length, 0);
+  const scene = feel === "easy" ? "setCompleteEasy" : feel === "hard" ? "setCompleteHard" : "setCompleteOk";
+  say(scene, `${date}-${totalSets}`, feel === "hard" ? "ganbare" : "smile");
 
   const isLastSetOfExercise = workout.setIndex + 1 >= item.sets;
   if (isLastSetOfExercise) {
@@ -189,6 +268,7 @@ function beginRest(seconds) {
   workout.resting = true;
   workout.restRemaining = seconds;
   workout.restMessage = `休憩開始(${seconds}秒)`;
+  say("restStart", `${todayStr()}-${workout.index}-${workout.setIndex}`, "normal");
   renderApp();
   workout.timerId = window.setInterval(() => {
     workout.restRemaining -= 1;
@@ -203,6 +283,12 @@ function beginRest(seconds) {
       if (workout.restRemaining === 10) {
         workout.restMessage = "もうすぐ再開です";
         if (workout.restStatus.isConnected) workout.restStatus.textContent = workout.restMessage;
+        // フル再描画すると休憩タイマーの見た目が乱れるため、ここはセリフのテキストと
+        // 音声だけを更新する(キャラの表情は休憩開始時のまま=意図的な簡略化)。
+        say("restAlmostDone", `${todayStr()}-${workout.index}-${workout.setIndex}`, "ganbare");
+        if (coachSpeech && workout.coachTextNode && workout.coachTextNode.isConnected) {
+          workout.coachTextNode.textContent = coachSpeech.text;
+        }
       }
     }
   }, 1000);
@@ -218,6 +304,7 @@ function finishWorkout() {
   state = { ...state, exerciseState, sessions };
   persist();
   workout = null;
+  say("allDone", date, "smile");
   renderApp();
 }
 
@@ -235,9 +322,14 @@ function renderWorkout() {
     if (status.isConnected && status.textContent !== message) status.textContent = message;
   }, 0);
 
+  // 休憩10秒前の更新はフル再描画せず直接テキストを書き換えるため、同じノードを使い回す。
+  const coachTextNode = workout.coachTextNode || el("p", { className: "speech-bubble" }, "");
+  workout.coachTextNode = coachTextNode;
+
   if (workout.resting) {
     return el("div", { className: "card workout-card" }, [
       el("p", { className: "progress-label" }, progressLabel),
+      coachRow(coachTextNode),
       el("h2", {}, "休憩中"),
       el("p", { className: "rest-timer", "aria-hidden": "true" }, `${workout.restRemaining}秒`),
       status,
@@ -260,6 +352,7 @@ function renderWorkout() {
   const amountLabel = ex.unit === "seconds" ? `${item.amount}秒` : `${item.amount}回`;
   return el("div", { className: "card workout-card" }, [
     el("p", { className: "progress-label" }, progressLabel),
+    coachRow(coachTextNode),
     status,
     el("h2", { className: "exercise-name" }, ex.name),
     el("p", { className: "exercise-amount" }, amountLabel),
@@ -282,6 +375,7 @@ function renderToday() {
     return renderCounselingForm(onboardingDraft, (profile) => {
       state = { ...state, profile };
       persist();
+      say("greeting", todayStr(), "normal");
       renderApp();
     }, "はじめる");
   }
@@ -293,6 +387,7 @@ function renderToday() {
 
   const children = [
     el("h2", {}, "今日のメニュー"),
+    coachRow(),
     doneToday ? notice("今日はもう完了しています。おつかれさまでした。") : null,
   ];
 
@@ -368,6 +463,7 @@ function renderReflect() {
 
   return el("div", { className: "card" }, [
     el("h2", {}, "振り返り"),
+    coachRow(),
     el("div", { className: "stat-row" }, [
       el("div", { className: "stat-box" }, [el("div", { className: "stat-num" }, String(weekly)), el("div", { className: "stat-label" }, "今週の実施回数")]),
       el("div", { className: "stat-box" }, [el("div", { className: "stat-num" }, String(streak)), el("div", { className: "stat-label" }, "連続日数")]),
@@ -513,6 +609,7 @@ function renderSettings() {
       "この内容で保存"
     ),
     el("p", { className: "disclaimer" }, "このアプリは医療・診断の助言はしません。痛みが出たらすぐに中止し、持病がある方は医師に相談してください。"),
+    el("p", { className: "disclaimer" }, "コーチの声: VOICEVOX:ずんだもん"),
     el("hr"),
     dangerZone,
   ]);
@@ -551,3 +648,6 @@ function renderApp() {
 }
 
 renderApp();
+
+// iOS Safari はユーザー操作なしの音声再生を禁止するため、最初のクリックで解錠しておく。
+document.addEventListener("click", unlockVoice, { once: true });
