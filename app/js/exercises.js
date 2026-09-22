@@ -1,10 +1,25 @@
 // 種目データ。新しい種目を足したい場合は CONTRIBUTING.md を参照。
 // 1種目 = { id, name, bodyPart, equipment: ['none'|'dumbbell'|'gym'], difficulty: 1-3,
 //           unit: 'reps'|'seconds', points: [string,string,string], easierId, harderId }
+// Optional: phase (専用の準備・整理運動), impact: "high", experiencedOnly: true, movement: "pull"
 // bodyPart: 'full' | 'upper' | 'lower' | 'core'
 // equipment: その種目を行うのに必要な最小限の器具(1つ)。'none' は自宅・器具なしでできる。
 
 export const EXERCISES = [
+  // ---- 固定の準備・整理運動（メイン候補・負荷調整とは別ID） ----
+  { id: "warmup-march", name: "準備運動：ゆっくり足踏み", bodyPart: "full", equipment: "none", difficulty: 1, unit: "seconds", phase: "warmup",
+    points: ["その場で小さく足踏みする", "跳ばずに片足ずつ静かに下ろす", "腕を軽く振り、楽な速さで動く"],
+    easierId: null, harderId: null },
+  { id: "warmup-shoulder-circle", name: "準備運動：肩回し", bodyPart: "upper", equipment: "none", difficulty: 1, unit: "seconds", phase: "warmup",
+    points: ["腕を楽に下ろして立つ", "肩を小さくゆっくり回す", "前回しと後ろ回しを半分ずつ行う"],
+    easierId: null, harderId: null },
+  { id: "cooldown-shoulder-stretch", name: "整理運動：肩のストレッチ", bodyPart: "upper", equipment: "none", difficulty: 1, unit: "seconds", phase: "cooldown",
+    points: ["片腕を胸の前に伸ばし反対の手で軽く支える", "反動をつけず楽に伸びる位置で保つ", "左右15秒ずつ、呼吸を止めずに行う"],
+    easierId: null, harderId: null },
+  { id: "cooldown-calf-stretch", name: "整理運動：ふくらはぎのストレッチ", bodyPart: "lower", equipment: "none", difficulty: 1, unit: "seconds", phase: "cooldown",
+    points: ["壁に手を添え、足を前後に開く", "後ろのかかとを床につけ、反動をつけず保つ", "左右15秒ずつ、無理のない幅で行う"],
+    easierId: null, harderId: null },
+
   // ---- 上半身・自宅器具なし ----
   { id: "pushup", name: "膝つき腕立て伏せ", bodyPart: "upper", equipment: "none", difficulty: 1, unit: "reps",
     points: ["手は肩の真下より少し外側につく", "膝から頭まで一直線を保つ", "胸が床に近づくまで下げる"],
@@ -38,16 +53,16 @@ export const EXERCISES = [
   { id: "chair-squat", name: "椅子スクワット", bodyPart: "lower", equipment: "none", difficulty: 1, unit: "reps",
     points: ["椅子の前に立ち腰を落とす", "お尻が軽く座面に触れたら立ち上がる", "背筋はまっすぐ保つ"],
     easierId: null, harderId: "squat" },
-  { id: "jump-squat", name: "ジャンプスクワット", bodyPart: "lower", equipment: "none", difficulty: 2, unit: "reps",
+  { id: "jump-squat", impact: "high", name: "ジャンプスクワット", bodyPart: "lower", equipment: "none", difficulty: 2, unit: "reps",
     points: ["スクワットの姿勢から真上に跳ぶ", "着地は膝を軽く曲げて衝撃を吸収", "着地音を小さくするよう意識"],
     easierId: "squat", harderId: "pistol-squat" },
-  { id: "pistol-squat", name: "片脚スクワット(補助あり)", bodyPart: "lower", equipment: "none", difficulty: 3, unit: "reps",
+  { id: "pistol-squat", experiencedOnly: true, name: "片脚スクワット(補助あり)", bodyPart: "lower", equipment: "none", difficulty: 3, unit: "reps",
     points: ["壁や椅子に軽く手を添えて補助にする", "片脚を前に伸ばしたまま腰を落とす", "反対の脚は床につけない"],
     easierId: "jump-squat", harderId: null },
   { id: "lunge", name: "ランジ", bodyPart: "lower", equipment: "none", difficulty: 2, unit: "reps",
     points: ["前脚の膝は90度を目安に曲げる", "後ろ脚の膝は床すれすれまで下ろす", "上体は起こしたまま行う"],
     easierId: "chair-squat", harderId: "jump-lunge" },
-  { id: "jump-lunge", name: "ジャンピングランジ", bodyPart: "lower", equipment: "none", difficulty: 3, unit: "reps",
+  { id: "jump-lunge", impact: "high", name: "ジャンピングランジ", bodyPart: "lower", equipment: "none", difficulty: 3, unit: "reps",
     points: ["ランジの姿勢からジャンプして脚を入れ替える", "着地は柔らかく膝で吸収する", "上体をぶらさない"],
     easierId: "lunge", harderId: null },
   { id: "calf-raise", name: "カーフレイズ", bodyPart: "lower", equipment: "none", difficulty: 1, unit: "reps",
@@ -96,13 +111,13 @@ export const EXERCISES = [
     easierId: null, harderId: null },
 
   // ---- 全身・自宅器具なし ----
-  { id: "burpee", name: "バーピー", bodyPart: "full", equipment: "none", difficulty: 3, unit: "reps",
+  { id: "burpee", impact: "high", name: "バーピー", bodyPart: "full", equipment: "none", difficulty: 3, unit: "reps",
     points: ["しゃがんで手を床につく", "脚を後ろに伸ばして腕立ての姿勢に", "立ち上がりジャンプで締める"],
     easierId: "squat-thrust", harderId: null },
   { id: "squat-thrust", name: "スクワットスラスト", bodyPart: "full", equipment: "none", difficulty: 2, unit: "reps",
     points: ["しゃがんで手を床につく", "脚を後ろに伸ばしてまた戻す", "ジャンプは省いてよい"],
     easierId: null, harderId: "burpee" },
-  { id: "jumping-jack", name: "ジャンピングジャック", bodyPart: "full", equipment: "none", difficulty: 1, unit: "seconds",
+  { id: "jumping-jack", impact: "high", name: "ジャンピングジャック", bodyPart: "full", equipment: "none", difficulty: 1, unit: "seconds",
     points: ["脚を開くと同時に腕を頭上へ", "リズムよく繰り返す", "着地は膝を軽く曲げて吸収"],
     easierId: null, harderId: "burpee" },
   { id: "high-knees", name: "その場もも上げ", bodyPart: "full", equipment: "none", difficulty: 1, unit: "seconds",
@@ -116,9 +131,9 @@ export const EXERCISES = [
   { id: "db-goblet-squat", name: "ダンベルゴブレットスクワット", bodyPart: "lower", equipment: "dumbbell", difficulty: 2, unit: "reps",
     points: ["ダンベルを胸の前で両手で持つ", "スクワットと同じ要領でしゃがむ", "背筋をまっすぐ保つ"],
     easierId: "squat", harderId: null },
-  { id: "db-row", name: "ダンベルロウ", bodyPart: "upper", equipment: "dumbbell", difficulty: 2, unit: "reps",
+  { id: "db-row", movement: "pull", name: "ダンベルロウ", bodyPart: "upper", equipment: "dumbbell", difficulty: 2, unit: "reps",
     points: ["片手を椅子について前傾姿勢を作る", "肘を後ろに引くようにダンベルを引き上げる", "肩甲骨を寄せる意識で行う"],
-    easierId: "pushup", harderId: null },
+    easierId: null, harderId: null },
   { id: "db-shoulder-press", name: "ダンベルショルダープレス", bodyPart: "upper", equipment: "dumbbell", difficulty: 2, unit: "reps",
     points: ["ダンベルを肩の高さで構える", "頭上へまっすぐ押し上げる", "反動を使わずゆっくり下ろす"],
     easierId: "pike-pushup", harderId: null },
@@ -133,7 +148,7 @@ export const EXERCISES = [
   { id: "gym-leg-press", name: "レッグプレス", bodyPart: "lower", equipment: "gym", difficulty: 2, unit: "reps",
     points: ["足はプレート中央よりやや高めに置く", "膝がつま先の方向と揃うように押す", "膝を伸ばしきらず少し余裕を残す"],
     easierId: "squat", harderId: null },
-  { id: "gym-lat-pulldown", name: "ラットプルダウン", bodyPart: "upper", equipment: "gym", difficulty: 2, unit: "reps",
+  { id: "gym-lat-pulldown", movement: "pull", name: "ラットプルダウン", bodyPart: "upper", equipment: "gym", difficulty: 2, unit: "reps",
     points: ["バーは肩幅よりやや広めで握る", "胸を張って肩甲骨を寄せながら引く", "肘を体側に沿わせて下ろす"],
     easierId: "db-row", harderId: null },
   { id: "gym-chest-press", name: "チェストプレスマシン", bodyPart: "upper", equipment: "gym", difficulty: 2, unit: "reps",
@@ -160,4 +175,10 @@ const EXPERIENCE_MAX_DIFFICULTY = { beginner: 2, some: 3, experienced: 3 };
 /** 経験レベルに応じて許容する最大difficultyを返す */
 export function maxDifficultyFor(experience) {
   return EXPERIENCE_MAX_DIFFICULTY[experience] || 2;
+}
+
+/** 「少しある」は上限3のうち衝撃系・片脚スクワットを除く（低難易度のジャンプも除外）。 */
+export function suitableForExperience(exercise, experience) {
+  return exercise.difficulty <= maxDifficultyFor(experience)
+    && (experience !== "some" || (exercise.impact !== "high" && !exercise.experiencedOnly));
 }
