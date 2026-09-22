@@ -38,7 +38,7 @@ jobs:
           fi
           echo "run=true" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         if: steps.gate.outputs.run == 'true'
 
       - uses: actions/setup-node@v4
