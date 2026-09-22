@@ -77,7 +77,7 @@ jobs:
             手順:
             1. README.md, app/SPEC.md, app/CONTRIBUTING.md, LESSONS.md(あれば)を読んで全体像を掴む
             2. autopilot/inbox/${{ steps.gate.outputs.date }}.json があれば読む（無ければ今日の新規の声は無し）
-            3. `gh issue list --state open --label idea,bug,exercise` で未対応のIssueも候補にする
+            3. `gh issue list --state open --limit 50` で未対応のIssueも候補にする（label が needs-human / question / autopilot のものは除く）
             4. 上記から改善案を1件選ぶ（候補が無ければ `gh issue list --state open --label "good first issue"`
                か app/SPEC.md 記載の未実装点やUXの小さな改善を1件選ぶ）
             5. 「運営そのものへの教訓」系の声（OSS初心者への助言など）があれば、個人名やXのハンドル名を
@@ -106,6 +106,29 @@ jobs:
             exit 0
           fi
           echo "pr_number=${pr_number}" >> "$GITHUB_ENV"
+
+      - name: Test PR head with trusted checks (no credentials)
+        # GITHUB_TOKEN で作った PR では CI が起動しないため、ここで直接テストと静的検査を回す。
+        # 検査スクリプトは PR 側ではなく main 側（信頼できる版）を使い、PR のコードは認証情報なしで実行する。
+        id: verify
+        if: steps.gate.outputs.run == 'true' && env.pr_number != ''
+        run: |
+          set -uo pipefail
+          git config --local --unset-all http.https://github.com/.extraheader || true
+          git fetch -q origin main "+refs/pull/${pr_number}/head:refs/remotes/pr/head"
+          rm -rf /tmp/pr && mkdir -p /tmp/pr
+          git archive refs/remotes/pr/head | tar -x -C /tmp/pr
+          git show origin/main:.github/scripts/static-checks.sh > /tmp/static-checks.sh
+          ok=1
+          (cd /tmp/pr && node --test app/tests/*.test.js) || { echo "::error::テスト失敗"; ok=0; }
+          (cd /tmp/pr && for f in app/js/*.js; do node --check "$f" || exit 1; done) || { echo "::error::構文エラー"; ok=0; }
+          bash /tmp/static-checks.sh /tmp/pr || { echo "::error::静的検査失敗"; ok=0; }
+          del=$(git diff --numstat origin/main refs/remotes/pr/head -- app/tests | awk '{d+=$2} END {print d+0}')
+          if [ "$del" -gt 0 ]; then echo "::error::既存テストの削除・書き換え ${del}行（人の確認に回す）"; ok=0; fi
+          if git diff origin/main refs/remotes/pr/head -- index.html app/index.html | grep -qi 'content-security-policy'; then
+            echo "::error::CSPの変更（人の確認に回す）"; ok=0
+          fi
+          echo "ok=${ok}" >> "$GITHUB_OUTPUT"
 
       - name: Machine-check allowlist & size, then auto-merge or label
         if: steps.gate.outputs.run == 'true' && env.pr_number != ''
@@ -140,19 +163,11 @@ jobs:
             bad=1
           fi
 
-          # CIがまだ走っていない/失敗している場合は待つ（最大10分）
-          for i in $(seq 1 20); do
-            state=$(gh pr checks "$pr" --json state -q '[.[].state] | unique | join(",")' 2>/dev/null || echo "PENDING")
-            if echo "$state" | grep -qE "FAILURE|ERROR|CANCELLED"; then
-              echo "CI失敗"
-              bad=1
-              break
-            fi
-            if ! echo "$state" | grep -qE "PENDING|IN_PROGRESS|QUEUED|EXPECTED"; then
-              break
-            fi
-            sleep 30
-          done
+          # テスト・静的検査・既存テスト/CSPの保護（前のステップで PR の中身を直接検査済み）
+          if [ "${{ steps.verify.outputs.ok }}" != "1" ]; then
+            echo "検査に通らなかったため自動マージしません"
+            bad=1
+          fi
 
           if [ "$bad" -eq 1 ]; then
             gh pr edit "$pr" --add-label "needs-human"
@@ -169,3 +184,15 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh workflow run announce.yml -f pr_number="${merged_pr}" --repo "${{ github.repository }}"
+
+      - name: Report improve failure
+        if: failure() && steps.gate.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          title="[autopilot] improveが失敗しました $(TZ=Asia/Tokyo date +%Y-%m-%d)"
+          if ! gh issue list --repo "${{ github.repository }}" --state open --search "\"${title}\" in:title" --json number -q '.[0].number' | grep -q .; then
+            gh issue create --repo "${{ github.repository }}" --title "${title}" \
+              --body "improve.yml が失敗しました（Claude の認証切れ・利用上限の可能性を含む）。${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+              --label "needs-human" || true
+          fi
