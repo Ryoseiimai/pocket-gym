@@ -93,7 +93,7 @@ async function postTweet({ text, mediaId, replyToId, cred }) {
 async function main() {
   const args = parseArgs();
   const state = loadThreads();
-  const todayStr = new Date().toISOString().slice(0, 10);
+  const todayStr = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10); // JST の日付（cron が遅れて UTC の日付がずれても1日1投稿を守る）
 
   if ((state.posts || []).some((p) => p.date === todayStr)) {
     console.log('[announce] 本日は投稿済みのため終了します。');

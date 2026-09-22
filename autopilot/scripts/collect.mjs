@@ -173,7 +173,7 @@ function collectGithub(state) {
 
 async function main() {
   const state = loadThreads();
-  const dateStr = new Date().toISOString().slice(0, 10);
+  const dateStr = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10); // JST の日付
 
   const { items: xItems, sinceId } = await collectX(state);
   const ghItems = collectGithub(state);
