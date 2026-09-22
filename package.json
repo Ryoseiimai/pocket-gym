@@ -1,0 +1,22 @@
+{
+  "name": "pocket-gym-ios",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "ポケットジムの iOS 外殻。Web 本体は app/ の依存ゼロの ES Modules。",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "test": "node --test app/tests/*.test.js",
+    "sync:ios": "bash scripts/sync-ios.sh",
+    "open:ios": "cap open ios"
+  },
+  "devDependencies": {
+    "@capacitor-community/keep-awake": "^8.0.1",
+    "@capacitor/cli": "^8.5.1",
+    "@capacitor/core": "^8.5.1",
+    "@capacitor/haptics": "^8.0.2",
+    "@capacitor/ios": "^8.5.1"
+  }
+}

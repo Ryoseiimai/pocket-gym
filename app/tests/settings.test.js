@@ -17,11 +17,15 @@ class TestNode {
   setAttribute(key, value) { this.attrs[key] = value; }
   addEventListener(name, handler) { this.events[name] = handler; }
   get textContent() { return this.text + this.children.map(n => n.textContent).join(""); }
+  set textContent(value) { this.text = value; this.children = []; }
 }
 
 let instance = 0;
-async function setup(t) {
+async function setup(t, native = false) {
   const root = new TestNode("root");
+  const nativeCalls = [];
+  const timers = new Map();
+  let nextTimer = 0;
   let stored = JSON.stringify({ ...emptyState(), profile: { ...defaultProfile(), onboarded: true } });
   const originals = new Map(["window", "document", "FileReader"].map(key => [key, Object.getOwnPropertyDescriptor(globalThis, key)]));
   t.after(() => {
@@ -34,6 +38,7 @@ async function setup(t) {
     getElementById: () => root,
     createElement: tag => new TestNode(tag),
     createTextNode: text => new TestNode("text", text),
+    querySelector: selector => nodes().find(n => n.className === selector.slice(1)),
   };
   globalThis.window = {
     localStorage: {
@@ -41,6 +46,22 @@ async function setup(t) {
       setItem: (key, value) => { assert.equal(key, STORAGE_KEY); stored = value; },
     },
     alert: message => assert.fail(message),
+    setTimeout: callback => { callback(); },
+    setInterval: callback => { timers.set(++nextTimer, callback); return nextTimer; },
+    clearInterval: id => timers.delete(id),
+  };
+  if (native) window.Capacitor = {
+    isNativePlatform: () => true,
+    Plugins: {
+      Haptics: {
+        notification: options => nativeCalls.push(["notification", options]),
+        impact: options => nativeCalls.push(["impact", options]),
+      },
+      KeepAwake: {
+        keepAwake: () => nativeCalls.push(["awake"]),
+        allowSleep: () => nativeCalls.push(["sleep"]),
+      },
+    },
   };
   await import(`../js/app.js?settings-test=${instance++}`);
   const nodes = (node = root) => [node, ...node.children.flatMap(child => nodes(child))];
@@ -48,7 +69,7 @@ async function setup(t) {
   const click = label => { assert.ok(button(label), label); button(label).events.click(); };
   const selected = label => assert.equal(button(label).attrs["aria-pressed"], "true", label);
   click("設定");
-  return { root, nodes, button, click, selected, saved: () => JSON.parse(stored) };
+  return { root, nodes, button, click, selected, nativeCalls, timers, saved: () => JSON.parse(stored) };
 }
 
 test("設定の全項目は再描画をまたいで保持され、保存時にだけプロフィールへ反映される", async t => {
@@ -114,3 +135,57 @@ test("全消去は確認とキャンセルを維持し、確定後は設定ド�
   assert.deepEqual(ui.saved(), emptyState());
   ui.selected("体を引き締める");
 });
+
+test("トレーニング開始・セット完了・休憩終了・全種目完了でネイティブ機能を呼ぶ", async t => {
+  const ui = await setup(t, true);
+  ui.click("今日");
+  ui.click("トレーニング開始");
+  assert.deepEqual(ui.nativeCalls, [["awake"]]);
+  let testedRest = false;
+  let completedSets = 0;
+  for (let step = 0; step < 100 && !ui.button("もう一度やる"); step++) {
+    if (ui.button("休憩をスキップ")) {
+      if (!testedRest) {
+        for (let second = 0; second < 300 && ui.timers.size; second++) {
+          for (const tick of ui.timers.values()) tick();
+        }
+        assert.equal(ui.timers.size, 0);
+        testedRest = true;
+      } else ui.click("休憩をスキップ");
+    } else {
+      ui.click("ちょうど");
+      completedSets++;
+    }
+  }
+  assert.ok(ui.button("もう一度やる"), "全種目を完了できる");
+  assert.ok(testedRest, "休憩タイマーを検証した");
+  assert.deepEqual(ui.nativeCalls.filter(([name]) => name === "notification"), [["notification", { type: "SUCCESS" }]]);
+  assert.equal(ui.nativeCalls.filter(([name]) => name === "impact").length, completedSets);
+  assert.equal(ui.saved().logs.length, completedSets);
+  assert.equal(ui.saved().sessions.length, 1);
+  assert.deepEqual(ui.nativeCalls.at(-1), ["sleep"]);
+});
+
+for (const action of ["全消去", "インポート"]) {
+  test(`トレーニング中の${action}でタイマーと画面ロック防止を解除する`, async t => {
+    const ui = await setup(t, true);
+    ui.click("今日");
+    ui.click("トレーニング開始");
+    for (let set = 0; set < 30 && !ui.timers.size; set++) ui.click("ちょうど");
+    assert.equal(ui.timers.size, 1);
+    ui.click("設定");
+    if (action === "全消去") {
+      ui.click("全データを消去する");
+      ui.click("はい、消去する");
+    } else {
+      globalThis.FileReader = class {
+        readAsText() { this.result = JSON.stringify(emptyState()); this.onload(); }
+      };
+      ui.nodes().find(n => n.attrs.type === "file").events.change({ target: { files: [{ size: 100 }] } });
+    }
+    assert.equal(ui.timers.size, 0);
+    assert.deepEqual(ui.nativeCalls.at(-1), ["sleep"]);
+    ui.click("今日");
+    assert.ok(ui.button("はじめる"));
+  });
+}

@@ -4,6 +4,7 @@ import { exerciseById } from "./exercises.js";
 import { generateMenu } from "./menu.js";
 import { applySessionResults } from "./progress.js";
 import { weeklySessionCount, currentStreak, levelHistoryFor, toSvgPoints, totalSetsByExercise } from "./stats.js";
+import { haptic, keepAwake } from "./native.js";
 
 const TABS = ["today", "log", "reflect", "settings"];
 const TAB_LABELS = { today: "今日", log: "記録", reflect: "振り返り", settings: "設定" };
@@ -141,6 +142,7 @@ function startWorkout() {
   const menu = menuForToday();
   if (menu.length === 0) return;
   workout = { menu, index: 0, setIndex: 0, feelsByExerciseId: {}, resting: false, restRemaining: 0, timerId: null };
+  void keepAwake(true);
   renderApp();
 }
 
@@ -156,6 +158,7 @@ function stopTimer() {
 }
 
 function completeSet(feel) {
+  void haptic("light");
   const item = workout.menu[workout.index];
   const feels = workout.feelsByExerciseId[item.exerciseId] || [];
   feels.push(feel);
@@ -192,11 +195,7 @@ function beginRest(seconds) {
     if (workout.restRemaining <= 0) {
       stopTimer();
       workout.resting = false;
-      try {
-        if (typeof navigator.vibrate === "function") navigator.vibrate([200, 100, 200]);
-      } catch {
-        // 振動を許可しない端末でもトレーニングを続けられるようにする。
-      }
+      void haptic("success");
       if (currentTab === "today") renderApp();
     } else if (currentTab === "today") {
       const timer = document.querySelector(".rest-timer");
@@ -211,6 +210,7 @@ function beginRest(seconds) {
 
 function finishWorkout() {
   stopTimer();
+  void keepAwake(false);
   const date = todayStr();
   const exerciseIds = workout.menu.map((m) => m.exerciseId);
   const exerciseState = applySessionResults(state.exerciseState, workout.feelsByExerciseId);
@@ -437,6 +437,9 @@ function renderSettings() {
               return;
             }
             state = result.data;
+            stopTimer();
+            workout = null;
+            void keepAwake(false);
             settingsDraft = null;
             importError = "";
             persist();
@@ -470,6 +473,9 @@ function renderSettings() {
             {
               className: "danger-btn",
               onClick: () => {
+                stopTimer();
+                workout = null;
+                void keepAwake(false);
                 state = emptyState();
                 settingsDraft = null;
                 persist();
