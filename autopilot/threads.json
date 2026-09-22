@@ -4,6 +4,13 @@
   "root_tweet_id": "2102446701097452016",
   "x_search_since_id": null,
   "github_last_collect_at": null,
-  "day_count": 1,
-  "posts": []
+  "day_count": 2,
+  "posts": [
+    {
+      "day": 2,
+      "tweet_id": "2102479769476505625",
+      "date": "2026-09-23",
+      "title": "休憩画面の「次:」表記を「次のセット:」に改善"
+    }
+  ]
 }
