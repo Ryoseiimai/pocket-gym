@@ -1,2 +1,5 @@
 .DS_Store
 node_modules/
+
+# App Store Connect の画面控え（ブックマーク等が写るため公開しない）
+store/控え/
