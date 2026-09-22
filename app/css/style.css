@@ -57,6 +57,10 @@ body {
 
 .app-header {
   padding: 16px;
+  /* iPhone のステータスバー（時計・電池）とタイトルが重ならないよう上端の安全領域を空ける */
+  padding-top: calc(16px + env(safe-area-inset-top, 0px));
+  padding-left: calc(16px + env(safe-area-inset-left, 0px));
+  padding-right: calc(16px + env(safe-area-inset-right, 0px));
   border-bottom: 1px solid var(--border);
 }
 
