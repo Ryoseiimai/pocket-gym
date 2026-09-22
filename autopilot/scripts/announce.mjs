@@ -71,6 +71,15 @@ async function uploadMedia(pngBuffer, cred) {
   return json.media_id_string;
 }
 
+async function whoAmI(cred) {
+  const url = 'https://api.twitter.com/2/users/me';
+  const authHeader = buildOAuthHeader({ method: 'GET', url, params: {}, ...cred });
+  const res = await fetch(url, { headers: { Authorization: authHeader } });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok || !json.data) throw new Error(`users/me 失敗: ${res.status}`);
+  return json.data.username;
+}
+
 async function postTweet({ text, mediaId, replyToId, cred }) {
   const url = 'https://api.twitter.com/2/tweets';
   const authHeader = buildOAuthHeader({ method: 'POST', url, params: {}, ...cred });
@@ -120,6 +129,11 @@ async function main() {
   }
 
   const cred = creds();
+  // 鍵ファイルの取り違えで別アカウントから投稿しないよう、投稿前に必ずアカウントを確かめる（9/23 実際に取り違えが起きた）
+  const me = await whoAmI(cred);
+  const expected = state.x_username || 'ryoseichan3160';
+  if (me !== expected) throw new Error(`Xの鍵のアカウントが違います: @${me}（期待: @${expected}）`);
+  console.log(`[announce] アカウント確認OK: @${me}`);
   const pngBuffer = readFileSync(shotPath);
   const mediaId = await uploadMedia(pngBuffer, cred);
   console.log(`[announce] media_id=${mediaId}`);
