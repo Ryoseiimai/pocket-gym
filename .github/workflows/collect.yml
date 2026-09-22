@@ -61,7 +61,9 @@ jobs:
         run: |
           git config user.name "pocket-gym-autopilot"
           git config user.email "autopilot@users.noreply.github.com"
-          git add autopilot/inbox autopilot/threads.json autopilot/X_QUOTA_EXHAUSTED.flag 2>/dev/null || true
+          # 存在しないパスを1つでも混ぜると git add は何も追加しない（9/23 これで inbox が一度も保存されていなかった）
+          git add -A autopilot/inbox autopilot/threads.json
+          if [ -f autopilot/X_QUOTA_EXHAUSTED.flag ]; then git add autopilot/X_QUOTA_EXHAUSTED.flag; fi
           if git diff --cached --quiet; then
             echo "変更なし。コミットしません。"
           else
