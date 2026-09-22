@@ -56,6 +56,19 @@ EU除外地域: AUT, BEL, BGR, HRV, CYP, CZE, DNK, EST, FIN, FRA, DEU, GRC, HUN,
 - Daily NoteはOSのアクセス制限（Operation not permitted）で参照・更新できず。依頼台帳と本ファイルに記録。`irai done` は成功したが、`irai render` のVault反映も同じOS制限で失敗（台帳のローカル保存は成功）。
 - `控え/` はコミット対象外。秘密鍵・Issuer ID・JWTをファイルやログに保存していない。pushはしない。
 
+## 審査提出（R1857続き）
+
+- 提出日時: 2026-09-23T05:35頃 JST
+- ビルド: 1.0.0 (1)（buildNumber=1、processingState=VALID、usesNonExemptEncryption=false設定済み・Info.plist由来）
+- appStoreVersion(id `9c8fbbb8-39e2-4ac1-af44-a867f12cf91e`)にビルドを関連付け、読み戻しで一致確認。releaseType=AFTER_APPROVAL（承認後に自動公開）
+- 提出前チェック(precheck): ローカライズ(ja)・6.9インチスクショ5枚COMPLETE・審査連絡先・年齢制限申告・価格(0円)・配信地域を全てAPIで読み戻し、問題なし
+- 「規制対象の医療用デバイス」申告: APIに項目がなく、Web(`https://appstoreconnect.apple.com/apps/6814961139/distribution/info`)の「規制対象の医療用デバイスを申告」ダイアログで「いいえ」を選択して保存（chrome-js・個人プロファイル、パスワード入力なし）。保存後、警告バナーが消えたことを確認
+- reviewSubmissions API: POST reviewSubmissions(platform=IOS) → POST reviewSubmissionItems(appStoreVersion) → PATCH submitted=true。reviewSubmission id `4c665238-1b20-4bdf-bb9c-ac78104c8acc`
+- 読み戻し: appStoreVersion.appStoreState = `WAITING_FOR_REVIEW`、reviewSubmission.state = `WAITING_FOR_REVIEW`
+- Web実画面でも「審査待ち」を確認。スクショ: [asc-submitted.png](控え/asc-submitted.png)
+- トレーダーステータス・契約・銀行・税の変更なし。パスワード・2段階認証の入力なし
+- 秘密鍵・Issuer ID・JWTはログ・ファイル・報告に出していない
+
 ### 確認した公式資料
 
 - [Apple App Store Connect API OpenAPI定義](https://developer.apple.com/sample-code/app-store-connect/app-store-connect-openapi-specification.zip)（取得時の定義更新日2026-07-16、年齢制限の最新属性名とScreenshotDisplayTypeを確認）
