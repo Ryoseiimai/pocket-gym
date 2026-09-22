@@ -8,7 +8,8 @@
   --accent-fg: #ffffff;
   --danger: #b3261e;
   --easy: #2e7d32;
-  --ok: #b58900;
+  /* White text on #7a5c00: 6.25:1 in both light and dark themes (WCAG AA). */
+  --ok: #7a5c00;
   --hard: #b3261e;
 }
 
@@ -26,6 +27,13 @@
 
 * {
   box-sizing: border-box;
+}
+
+/* White inner ring and black outer ring stay visible on either theme. */
+:focus-visible {
+  outline: 3px solid #000000;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px #ffffff;
 }
 
 html,
@@ -60,7 +68,9 @@ body {
 .app-main {
   flex: 1;
   padding: 16px;
-  padding-bottom: 96px;
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  padding-left: calc(16px + env(safe-area-inset-left, 0px));
+  padding-right: calc(16px + env(safe-area-inset-right, 0px));
 }
 
 .card {
@@ -298,6 +308,9 @@ body {
   display: flex;
   max-width: 480px;
   margin: 0 auto;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
   background: var(--bg);
   border-top: 1px solid var(--border);
 }
