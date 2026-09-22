@@ -1,0 +1,37 @@
+name: 種目の追加リクエスト
+description: メニューに追加してほしい種目を教えてください
+labels: ["exercise"]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: 種目名
+    validations:
+      required: true
+  - type: dropdown
+    id: bodyPart
+    attributes:
+      label: 部位
+      options:
+        - upper (上半身)
+        - lower (下半身)
+        - core (体幹)
+        - full (全身)
+    validations:
+      required: true
+  - type: dropdown
+    id: equipment
+    attributes:
+      label: 必要な器具
+      options:
+        - none (器具なし)
+        - dumbbell (ダンベル)
+        - gym (ジム設備)
+    validations:
+      required: true
+  - type: textarea
+    id: points
+    attributes:
+      label: フォームのポイント(3つ程度)
+    validations:
+      required: false

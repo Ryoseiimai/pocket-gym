@@ -1,0 +1,17 @@
+name: アイデア・改善提案
+description: ほしい機能や改善したい点を教えてください
+labels: ["idea"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: どんなアイデアですか
+      description: できるだけ具体的にお願いします
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: なぜ欲しいですか(困っていること・こうなると嬉しいこと)
+    validations:
+      required: false

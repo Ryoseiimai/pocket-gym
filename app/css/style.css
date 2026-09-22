@@ -1,0 +1,317 @@
+:root {
+  --bg: #ffffff;
+  --fg: #111111;
+  --fg-muted: #555555;
+  --border: #dddddd;
+  --card-bg: #f7f7f7;
+  --accent: #1f7a4d;
+  --accent-fg: #ffffff;
+  --danger: #b3261e;
+  --easy: #2e7d32;
+  --ok: #b58900;
+  --hard: #b3261e;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111111;
+    --fg: #f2f2f2;
+    --fg-muted: #b0b0b0;
+    --border: #333333;
+    --card-bg: #1c1c1c;
+    --accent: #3fae7d;
+    --accent-fg: #0a0a0a;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.app-header {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.app-main {
+  flex: 1;
+  padding: 16px;
+  padding-bottom: 96px;
+}
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.card h2 {
+  margin-top: 0;
+  font-size: 18px;
+}
+
+.field-label {
+  display: block;
+  font-weight: bold;
+  margin: 16px 0 8px;
+}
+
+.radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.choice {
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 16px;
+}
+
+.choice-selected {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--accent);
+}
+
+.primary-btn,
+.secondary-btn,
+.danger-btn {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 16px;
+  border-radius: 10px;
+  font-size: 16px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+}
+
+.primary-btn {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--accent);
+  font-weight: bold;
+}
+
+.secondary-btn {
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.danger-btn {
+  background: var(--danger);
+  color: #ffffff;
+  border-color: var(--danger);
+}
+
+.disclaimer {
+  font-size: 13px;
+  color: var(--fg-muted);
+  margin-top: 16px;
+}
+
+.notice {
+  color: var(--fg-muted);
+}
+
+.menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.menu-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.menu-item-name {
+  font-weight: bold;
+}
+
+.menu-item-detail {
+  color: var(--fg-muted);
+}
+
+.workout-card {
+  text-align: center;
+}
+
+.progress-label {
+  color: var(--fg-muted);
+  font-size: 14px;
+}
+
+.exercise-name {
+  font-size: 26px;
+  margin: 8px 0;
+}
+
+.exercise-amount {
+  font-size: 32px;
+  font-weight: bold;
+  margin: 0 0 16px;
+}
+
+.form-points {
+  text-align: left;
+  padding-left: 20px;
+}
+
+.feel-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.feel-btn {
+  flex: 1;
+  min-height: 56px;
+  border-radius: 10px;
+  border: none;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.feel-easy {
+  background: var(--easy);
+}
+
+.feel-ok {
+  background: var(--ok);
+}
+
+.feel-hard {
+  background: var(--hard);
+}
+
+.rest-timer {
+  font-size: 48px;
+  font-weight: bold;
+  margin: 16px 0;
+}
+
+.log-list,
+.chart-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.log-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.log-count {
+  color: var(--fg-muted);
+}
+
+.stat-row {
+  display: flex;
+  gap: 12px;
+}
+
+.stat-box {
+  flex: 1;
+  text-align: center;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.stat-num {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.stat-label {
+  color: var(--fg-muted);
+  font-size: 13px;
+}
+
+.chart-item {
+  margin-top: 16px;
+}
+
+.chart-title {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.level-chart {
+  color: var(--accent);
+  width: 100%;
+  height: auto;
+}
+
+.error-text {
+  color: var(--danger);
+}
+
+.danger-zone {
+  margin-top: 24px;
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+
+.tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  max-width: 480px;
+  margin: 0 auto;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+}
+
+.tab-btn {
+  flex: 1;
+  min-height: 56px;
+  border: none;
+  background: transparent;
+  color: var(--fg-muted);
+  font-size: 14px;
+}
+
+.tab-btn-active {
+  color: var(--accent);
+  font-weight: bold;
+}

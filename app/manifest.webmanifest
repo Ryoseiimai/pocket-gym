@@ -1,0 +1,14 @@
+{
+  "name": "ポケットジム",
+  "short_name": "ポケットジム",
+  "description": "携帯だけで完結するパーソナルジム。初回カウンセリングから今日のメニュー生成、記録による自動調整、振り返りまで。",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1f7a4d",
+  "lang": "ja",
+  "icons": [
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

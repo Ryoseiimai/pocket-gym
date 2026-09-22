@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Discussions(教訓・雑談・要望など)
+    url: https://github.com/Ryoseiimai/pocket-gym/discussions
+    about: Issueにするほどでもない意見・教訓・雑談はこちらへ

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<title>ポケットジム — すず、誕生日おめでとう！</title>
+<meta name="description" content="携帯で完結するパーソナルジム「ポケットジム」。課金なし・ログインなし・データは端末内だけ。誕生日のすずへ贈るOSSアプリの紹介ページ。">
+<link rel="stylesheet" href="./lp.css">
+<meta name="theme-color" content="#e2573b">
+</head>
+<body>
+
+<header class="hero">
+  <div class="confetti" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+  <p class="hero-date">10.15</p>
+  <h1 class="hero-title">すず、<br>誕生日おめでとう！</h1>
+  <p class="hero-sub">パーソナルジムに行かなくても、<br>ポケットにジムを。</p>
+  <p class="hero-appname">ポケットジム <span class="badge">仮称・OSS・無料</span></p>
+</header>
+
+<main>
+
+  <section class="letter" aria-label="兄からのひとこと">
+    <!-- ここを書き換える: 本人があとで自由に差し替えられる文面 -->
+    <p>いつも頑張ってるすずへ。運動を続けたいけど、パーソナルジムに毎回通うのは大変だから、携帯だけで完結するジムを作ってみた。</p>
+    <p>最初に目的や使える時間を答えると、その日のメニューが出てくる。やってみて「楽／ちょうど／きつい」を記録すると、次は自動で回数を調整してくれるようになってる。</p>
+    <p>データは全部この携帯の中だけに残るから、誰にも送られない。気が向いたときに、少しずつ使ってみてね。</p>
+    <!-- ここまで書き換え -->
+  </section>
+
+  <section class="features" aria-label="アプリでできること">
+    <h2>アプリでできること</h2>
+    <div class="feature-grid">
+
+      <article class="feature-card">
+        <div class="shot-frame">
+          <img src="./assets/shots/01-counseling.png" alt="初回カウンセリング画面のスクリーンショット" width="375" height="812" loading="lazy">
+        </div>
+        <h3>初回カウンセリング</h3>
+        <p>目的・体力・使える時間を最初に聞くだけ。難しい設定は不要。</p>
+      </article>
+
+      <article class="feature-card">
+        <div class="shot-frame">
+          <img src="./assets/shots/02-today.png" alt="今日のメニュー画面のスクリーンショット" width="375" height="812" loading="lazy">
+        </div>
+        <h3>今日のメニュー自動生成</h3>
+        <p>その日の調子に合わせて、無理のないメニューを自動で組んでくれる。</p>
+      </article>
+
+      <article class="feature-card">
+        <div class="shot-frame">
+          <img src="./assets/shots/03-timer.png" alt="トレーニング実行・休憩タイマー画面のスクリーンショット" width="375" height="812" loading="lazy">
+        </div>
+        <h3>休憩タイマー付き実行</h3>
+        <p>種目と種目のあいだの休憩をタイマーが計ってくれるから、迷わず続けられる。</p>
+      </article>
+
+      <article class="feature-card">
+        <div class="shot-frame">
+          <img src="./assets/shots/04-review.png" alt="振り返り画面のスクリーンショット" width="375" height="812" loading="lazy">
+        </div>
+        <h3>記録で自動調整＆振り返り</h3>
+        <p>きつさを記録すると次回のメニューに反映。グラフでこれまでの積み重ねが見える。</p>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="oss" aria-label="みんなで育てるOSS">
+    <h2>みんなで育てるOSS</h2>
+    <p>ポケットジムはオープンソースで公開している。種目のバリエーションはみんなで追加していける。</p>
+    <p><a class="oss-link" href="https://github.com/Ryoseiimai/pocket-gym" rel="noopener">github.com/Ryoseiimai/pocket-gym</a></p>
+    <p class="oss-note">10/15の誕生日に向けて、毎日みんなの意見で改善中です（完成版は 10/15 Claude Build Night でお披露目）。</p>
+    <div class="oss-participate">
+      <h3>参加のしかた</h3>
+      <p>
+        <a class="oss-link" href="https://github.com/Ryoseiimai/pocket-gym/discussions" rel="noopener">GitHub Discussions</a>
+        で意見・アイデア・OSS初心者への教訓を、
+        <a class="oss-link" href="https://github.com/Ryoseiimai/pocket-gym/issues" rel="noopener">Issue</a>
+        でバグ報告や種目追加のリクエストを募集しています。
+      </p>
+    </div>
+  </section>
+
+  <section class="cta" aria-label="使ってみる">
+    <a class="cta-button" href="./app/">使ってみる</a>
+  </section>
+
+</main>
+
+<footer>
+  <p>このアプリは非営利で提供しています。医療的な助言ではありません。運動中に痛みなどの異常を感じたら、すぐに中止してください。</p>
+</footer>
+
+</body>
+</html>

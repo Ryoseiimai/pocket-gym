@@ -1,0 +1,9 @@
+{
+  "name": "pocket-gym",
+  "private": true,
+  "type": "module",
+  "description": "携帯だけで完結するパーソナルジム。初回カウンセリング・今日のメニュー自動生成・記録による自動調整・振り返り。ビルド不要の素のHTML/CSS/ES Modules。",
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  }
+}
