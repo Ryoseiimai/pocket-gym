@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { validateImport, emptyState, defaultProfile, MAX_ARRAY_LEN } from "../js/store.js";
+import { validateImport, emptyState, defaultProfile, saveState, MAX_ARRAY_LEN } from "../js/store.js";
 import { EXERCISES } from "../js/exercises.js";
 
 const exId = EXERCISES[0].id;
@@ -80,4 +80,75 @@ test("validateImport は __proto__ をキーに使ったexerciseStateを安全�
   const result = validateImport(raw);
   assert.equal(result.ok, true);
   assert.equal(Object.prototype.hasOwnProperty.call({}, "polluted"), false);
+});
+
+test("validateImport は exerciseState がちょうど MAX_ARRAY_LEN 件なら受理する(オフバイワン境界)", () => {
+  const exerciseState = {};
+  for (let i = 0; i < MAX_ARRAY_LEN; i++) exerciseState[`ex-${i}`] = { level: 0 };
+  const result = validateImport(validData({ exerciseState }));
+  assert.equal(result.ok, true);
+});
+
+test("validateImport は exerciseState が MAX_ARRAY_LEN+1 件だと打ち切って拒否する(オフバイワン境界)", () => {
+  const exerciseState = {};
+  for (let i = 0; i < MAX_ARRAY_LEN + 1; i++) exerciseState[`ex-${i}`] = { level: 0 };
+  const result = validateImport(validData({ exerciseState }));
+  assert.equal(result.ok, false);
+});
+
+test("saveState は window.localStorage.setItem が例外を投げても外に漏らさず false を返す", () => {
+  const originalWindow = globalThis.window;
+  globalThis.window = {
+    localStorage: {
+      setItem() {
+        // Safari プライベートブラウズや QuotaExceededError を模したスタブ
+        throw new DOMException("QuotaExceededError", "QuotaExceededError");
+      },
+    },
+  };
+  try {
+    const result = saveState(emptyState());
+    assert.equal(result, false);
+  } finally {
+    globalThis.window = originalWindow;
+  }
+});
+
+test("saveState はサイズ超過時に setItem を呼ばず false を返す(例外にも依存しない)", () => {
+  const originalWindow = globalThis.window;
+  let setItemCalled = false;
+  globalThis.window = {
+    localStorage: {
+      setItem() {
+        setItemCalled = true;
+      },
+    },
+  };
+  try {
+    const oversized = { junk: "x".repeat(5 * 1024 * 1024) }; // 5MB > MAX_BYTES(4MB)
+    const result = saveState(oversized);
+    assert.equal(result, false);
+    assert.equal(setItemCalled, false);
+  } finally {
+    globalThis.window = originalWindow;
+  }
+});
+
+test("saveState は正常時に true を返し setItem を1回呼ぶ", () => {
+  const originalWindow = globalThis.window;
+  const calls = [];
+  globalThis.window = {
+    localStorage: {
+      setItem(key, value) {
+        calls.push([key, value]);
+      },
+    },
+  };
+  try {
+    const result = saveState(emptyState());
+    assert.equal(result, true);
+    assert.equal(calls.length, 1);
+  } finally {
+    globalThis.window = originalWindow;
+  }
 });

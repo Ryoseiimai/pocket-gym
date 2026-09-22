@@ -83,11 +83,13 @@ function sanitizeExerciseState(raw, errors) {
   const out = {};
   let count = 0;
   for (const [id, val] of Object.entries(raw)) {
+    count += 1;
+    // 他の sanitize と同じく MAX_ARRAY_LEN 件ちょうどまでは許可し、超えたら打ち切る
+    // (以前は count のインクリメント前に判定していたため MAX_ARRAY_LEN+1 件まで通ってしまうオフバイワンがあった)
     if (count > MAX_ARRAY_LEN) {
       errors.push("exerciseState の件数が上限を超えています");
       return null;
     }
-    count += 1;
     if (!EXERCISE_IDS.has(id)) continue; // 未知の種目IDは無視して捨てる
     if (!isPlainObject(val) || !isValidLevel(val.level)) continue;
     out[id] = { level: val.level };
@@ -196,13 +198,22 @@ export function validateImport(raw) {
   return { ok: true, errors: [], data };
 }
 
-/** state を localStorage に保存する。サイズ上限を超える場合は保存せず false を返す */
+/**
+ * state を localStorage に保存する。サイズ上限を超える場合は保存せず false を返す。
+ * JSON.stringify や localStorage.setItem が例外を投げるケース(QuotaExceededError、
+ * Safari プライベートブラウズでの setItem 拒否、循環参照など)も例外を外に漏らさず
+ * false を返す(呼び出し側 app.js の persist() がこの戻り値で alert を出す想定)。
+ */
 export function saveState(state) {
-  const json = JSON.stringify(state);
-  const size = new TextEncoder().encode(json).length;
-  if (size > MAX_BYTES) return false;
-  window.localStorage.setItem(STORAGE_KEY, json);
-  return true;
+  try {
+    const json = JSON.stringify(state);
+    const size = new TextEncoder().encode(json).length;
+    if (size > MAX_BYTES) return false;
+    window.localStorage.setItem(STORAGE_KEY, json);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /** localStorage から state を読み込む。無ければ初期状態を返す */
