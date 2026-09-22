@@ -16,13 +16,13 @@
       "level": 0
     },
     "glute-bridge": {
-      "level": 0
+      "level": 2
     },
     "bicycle-crunch": {
-      "level": 1
+      "level": 2
     },
     "lunge": {
-      "level": 1
+      "level": 2
     },
     "cooldown-shoulder-stretch": {
       "level": 0
@@ -30,35 +30,44 @@
     "cooldown-calf-stretch": {
       "level": 0
     },
-    "squat-thrust": {
+    "superman": {
+      "level": 3
+    },
+    "pike-pushup": {
+      "level": 2
+    },
+    "arm-circle": {
+      "level": 2
+    },
+    "dead-bug": {
       "level": 1
     },
-    "calf-raise": {
-      "level": 0
-    },
-    "chair-squat": {
-      "level": 0
-    },
-    "squat": {
-      "level": -1
-    },
-    "single-calf-raise": {
-      "level": 0
-    },
-    "wall-pushup": {
+    "plank": {
       "level": 1
     },
     "bear-crawl": {
+      "level": 3
+    },
+    "squat": {
       "level": 1
     },
-    "superman": {
-      "level": 0
+    "single-calf-raise": {
+      "level": 2
+    },
+    "wall-pushup": {
+      "level": 2
+    },
+    "squat-thrust": {
+      "level": 2
+    },
+    "chair-squat": {
+      "level": 1
     },
     "pushup-standard": {
-      "level": 0
+      "level": 2
     },
     "tricep-dip": {
-      "level": 0
+      "level": 1
     }
   },
   "logs": [
@@ -141,79 +150,235 @@
       "count": 30
     },
     {
-      "date": "2026-09-11",
+      "date": "2026-09-10",
       "exerciseId": "warmup-march",
       "feel": "ok",
       "count": 45
     },
     {
-      "date": "2026-09-11",
+      "date": "2026-09-10",
       "exerciseId": "warmup-shoulder-circle",
       "feel": "ok",
       "count": 30
     },
     {
-      "date": "2026-09-11",
-      "exerciseId": "squat-thrust",
-      "feel": "ok",
+      "date": "2026-09-10",
+      "exerciseId": "superman",
+      "feel": "easy",
+      "count": 30
+    },
+    {
+      "date": "2026-09-10",
+      "exerciseId": "superman",
+      "feel": "easy",
+      "count": 30
+    },
+    {
+      "date": "2026-09-10",
+      "exerciseId": "superman",
+      "feel": "easy",
+      "count": 30
+    },
+    {
+      "date": "2026-09-10",
+      "exerciseId": "pike-pushup",
+      "feel": "easy",
       "count": 10
     },
     {
-      "date": "2026-09-11",
-      "exerciseId": "squat-thrust",
-      "feel": "ok",
+      "date": "2026-09-10",
+      "exerciseId": "pike-pushup",
+      "feel": "easy",
       "count": 10
     },
     {
-      "date": "2026-09-11",
-      "exerciseId": "squat-thrust",
-      "feel": "ok",
+      "date": "2026-09-10",
+      "exerciseId": "pike-pushup",
+      "feel": "easy",
       "count": 10
     },
     {
-      "date": "2026-09-11",
-      "exerciseId": "calf-raise",
-      "feel": "ok",
-      "count": 10
+      "date": "2026-09-10",
+      "exerciseId": "arm-circle",
+      "feel": "easy",
+      "count": 30
     },
     {
-      "date": "2026-09-11",
-      "exerciseId": "calf-raise",
-      "feel": "ok",
-      "count": 10
+      "date": "2026-09-10",
+      "exerciseId": "arm-circle",
+      "feel": "easy",
+      "count": 30
     },
     {
-      "date": "2026-09-11",
-      "exerciseId": "calf-raise",
-      "feel": "ok",
-      "count": 10
+      "date": "2026-09-10",
+      "exerciseId": "arm-circle",
+      "feel": "easy",
+      "count": 30
     },
     {
-      "date": "2026-09-11",
-      "exerciseId": "chair-squat",
-      "feel": "ok",
-      "count": 10
-    },
-    {
-      "date": "2026-09-11",
-      "exerciseId": "chair-squat",
-      "feel": "ok",
-      "count": 10
-    },
-    {
-      "date": "2026-09-11",
-      "exerciseId": "chair-squat",
-      "feel": "ok",
-      "count": 10
-    },
-    {
-      "date": "2026-09-11",
+      "date": "2026-09-10",
       "exerciseId": "cooldown-shoulder-stretch",
       "feel": "ok",
       "count": 30
     },
     {
-      "date": "2026-09-11",
+      "date": "2026-09-10",
+      "exerciseId": "cooldown-calf-stretch",
+      "feel": "ok",
+      "count": 30
+    },
+    {
+      "date": "2026-09-12",
+      "exerciseId": "warmup-march",
+      "feel": "ok",
+      "count": 45
+    },
+    {
+      "date": "2026-09-12",
+      "exerciseId": "warmup-shoulder-circle",
+      "feel": "ok",
+      "count": 30
+    },
+    {
+      "date": "2026-09-12",
+      "exerciseId": "bicycle-crunch",
+      "feel": "easy",
+      "count": 12
+    },
+    {
+      "date": "2026-09-12",
+      "exerciseId": "bicycle-crunch",
+      "feel": "easy",
+      "count": 12
+    },
+    {
+      "date": "2026-09-12",
+      "exerciseId": "bicycle-crunch",
+      "feel": "easy",
+      "count": 12
+    },
+    {
+      "date": "2026-09-12",
+      "exerciseId": "dead-bug",
+      "feel": "easy",
+      "count": 10
+    },
+    {
+      "date": "2026-09-12",
+      "exerciseId": "dead-bug",
+      "feel": "easy",
+      "count": 10
+    },
+    {
+      "date": "2026-09-12",
+      "exerciseId": "dead-bug",
+      "feel": "easy",
+      "count": 10
+    },
+    {
+      "date": "2026-09-12",
+      "exerciseId": "plank",
+      "feel": "easy",
+      "count": 30
+    },
+    {
+      "date": "2026-09-12",
+      "exerciseId": "plank",
+      "feel": "easy",
+      "count": 30
+    },
+    {
+      "date": "2026-09-12",
+      "exerciseId": "plank",
+      "feel": "easy",
+      "count": 30
+    },
+    {
+      "date": "2026-09-12",
+      "exerciseId": "cooldown-shoulder-stretch",
+      "feel": "ok",
+      "count": 30
+    },
+    {
+      "date": "2026-09-12",
+      "exerciseId": "cooldown-calf-stretch",
+      "feel": "ok",
+      "count": 30
+    },
+    {
+      "date": "2026-09-13",
+      "exerciseId": "warmup-march",
+      "feel": "ok",
+      "count": 45
+    },
+    {
+      "date": "2026-09-13",
+      "exerciseId": "warmup-shoulder-circle",
+      "feel": "ok",
+      "count": 30
+    },
+    {
+      "date": "2026-09-13",
+      "exerciseId": "arm-circle",
+      "feel": "easy",
+      "count": 35
+    },
+    {
+      "date": "2026-09-13",
+      "exerciseId": "arm-circle",
+      "feel": "easy",
+      "count": 35
+    },
+    {
+      "date": "2026-09-13",
+      "exerciseId": "arm-circle",
+      "feel": "easy",
+      "count": 35
+    },
+    {
+      "date": "2026-09-13",
+      "exerciseId": "superman",
+      "feel": "easy",
+      "count": 35
+    },
+    {
+      "date": "2026-09-13",
+      "exerciseId": "superman",
+      "feel": "easy",
+      "count": 35
+    },
+    {
+      "date": "2026-09-13",
+      "exerciseId": "superman",
+      "feel": "easy",
+      "count": 35
+    },
+    {
+      "date": "2026-09-13",
+      "exerciseId": "bear-crawl",
+      "feel": "easy",
+      "count": 30
+    },
+    {
+      "date": "2026-09-13",
+      "exerciseId": "bear-crawl",
+      "feel": "easy",
+      "count": 30
+    },
+    {
+      "date": "2026-09-13",
+      "exerciseId": "bear-crawl",
+      "feel": "easy",
+      "count": 30
+    },
+    {
+      "date": "2026-09-13",
+      "exerciseId": "cooldown-shoulder-stretch",
+      "feel": "ok",
+      "count": 30
+    },
+    {
+      "date": "2026-09-13",
       "exerciseId": "cooldown-calf-stretch",
       "feel": "ok",
       "count": 30
@@ -233,55 +398,55 @@
     {
       "date": "2026-09-14",
       "exerciseId": "squat",
-      "feel": "ok",
+      "feel": "easy",
       "count": 10
     },
     {
       "date": "2026-09-14",
       "exerciseId": "squat",
-      "feel": "ok",
+      "feel": "easy",
       "count": 10
     },
     {
       "date": "2026-09-14",
       "exerciseId": "squat",
-      "feel": "hard",
+      "feel": "easy",
       "count": 10
     },
     {
       "date": "2026-09-14",
       "exerciseId": "single-calf-raise",
-      "feel": "ok",
+      "feel": "easy",
       "count": 10
     },
     {
       "date": "2026-09-14",
       "exerciseId": "single-calf-raise",
-      "feel": "ok",
+      "feel": "easy",
       "count": 10
     },
     {
       "date": "2026-09-14",
       "exerciseId": "single-calf-raise",
-      "feel": "ok",
+      "feel": "easy",
       "count": 10
     },
     {
       "date": "2026-09-14",
       "exerciseId": "glute-bridge",
-      "feel": "ok",
+      "feel": "easy",
       "count": 12
     },
     {
       "date": "2026-09-14",
       "exerciseId": "glute-bridge",
-      "feel": "ok",
+      "feel": "easy",
       "count": 12
     },
     {
       "date": "2026-09-14",
       "exerciseId": "glute-bridge",
-      "feel": "hard",
+      "feel": "easy",
       "count": 12
     },
     {
@@ -348,19 +513,19 @@
       "date": "2026-09-16",
       "exerciseId": "bear-crawl",
       "feel": "easy",
-      "count": 30
+      "count": 35
     },
     {
       "date": "2026-09-16",
       "exerciseId": "bear-crawl",
       "feel": "easy",
-      "count": 30
+      "count": 35
     },
     {
       "date": "2026-09-16",
       "exerciseId": "bear-crawl",
       "feel": "easy",
-      "count": 30
+      "count": 35
     },
     {
       "date": "2026-09-16",
@@ -370,6 +535,162 @@
     },
     {
       "date": "2026-09-16",
+      "exerciseId": "cooldown-calf-stretch",
+      "feel": "ok",
+      "count": 30
+    },
+    {
+      "date": "2026-09-17",
+      "exerciseId": "warmup-march",
+      "feel": "ok",
+      "count": 45
+    },
+    {
+      "date": "2026-09-17",
+      "exerciseId": "warmup-shoulder-circle",
+      "feel": "ok",
+      "count": 30
+    },
+    {
+      "date": "2026-09-17",
+      "exerciseId": "lunge",
+      "feel": "easy",
+      "count": 12
+    },
+    {
+      "date": "2026-09-17",
+      "exerciseId": "lunge",
+      "feel": "easy",
+      "count": 12
+    },
+    {
+      "date": "2026-09-17",
+      "exerciseId": "lunge",
+      "feel": "easy",
+      "count": 12
+    },
+    {
+      "date": "2026-09-17",
+      "exerciseId": "single-calf-raise",
+      "feel": "easy",
+      "count": 12
+    },
+    {
+      "date": "2026-09-17",
+      "exerciseId": "single-calf-raise",
+      "feel": "easy",
+      "count": 12
+    },
+    {
+      "date": "2026-09-17",
+      "exerciseId": "single-calf-raise",
+      "feel": "easy",
+      "count": 12
+    },
+    {
+      "date": "2026-09-17",
+      "exerciseId": "chair-squat",
+      "feel": "easy",
+      "count": 10
+    },
+    {
+      "date": "2026-09-17",
+      "exerciseId": "chair-squat",
+      "feel": "easy",
+      "count": 10
+    },
+    {
+      "date": "2026-09-17",
+      "exerciseId": "chair-squat",
+      "feel": "easy",
+      "count": 10
+    },
+    {
+      "date": "2026-09-17",
+      "exerciseId": "cooldown-shoulder-stretch",
+      "feel": "ok",
+      "count": 30
+    },
+    {
+      "date": "2026-09-17",
+      "exerciseId": "cooldown-calf-stretch",
+      "feel": "ok",
+      "count": 30
+    },
+    {
+      "date": "2026-09-18",
+      "exerciseId": "warmup-march",
+      "feel": "ok",
+      "count": 45
+    },
+    {
+      "date": "2026-09-18",
+      "exerciseId": "warmup-shoulder-circle",
+      "feel": "ok",
+      "count": 30
+    },
+    {
+      "date": "2026-09-18",
+      "exerciseId": "squat-thrust",
+      "feel": "easy",
+      "count": 12
+    },
+    {
+      "date": "2026-09-18",
+      "exerciseId": "squat-thrust",
+      "feel": "easy",
+      "count": 12
+    },
+    {
+      "date": "2026-09-18",
+      "exerciseId": "squat-thrust",
+      "feel": "easy",
+      "count": 12
+    },
+    {
+      "date": "2026-09-18",
+      "exerciseId": "wall-pushup",
+      "feel": "easy",
+      "count": 12
+    },
+    {
+      "date": "2026-09-18",
+      "exerciseId": "wall-pushup",
+      "feel": "easy",
+      "count": 12
+    },
+    {
+      "date": "2026-09-18",
+      "exerciseId": "wall-pushup",
+      "feel": "easy",
+      "count": 12
+    },
+    {
+      "date": "2026-09-18",
+      "exerciseId": "pike-pushup",
+      "feel": "easy",
+      "count": 12
+    },
+    {
+      "date": "2026-09-18",
+      "exerciseId": "pike-pushup",
+      "feel": "easy",
+      "count": 12
+    },
+    {
+      "date": "2026-09-18",
+      "exerciseId": "pike-pushup",
+      "feel": "easy",
+      "count": 12
+    },
+    {
+      "date": "2026-09-18",
+      "exerciseId": "cooldown-shoulder-stretch",
+      "feel": "ok",
+      "count": 30
+    },
+    {
+      "date": "2026-09-18",
       "exerciseId": "cooldown-calf-stretch",
       "feel": "ok",
       "count": 30
@@ -389,55 +710,55 @@
     {
       "date": "2026-09-19",
       "exerciseId": "bear-crawl",
-      "feel": "ok",
-      "count": 35
+      "feel": "easy",
+      "count": 40
     },
     {
       "date": "2026-09-19",
       "exerciseId": "bear-crawl",
-      "feel": "ok",
-      "count": 35
+      "feel": "easy",
+      "count": 40
     },
     {
       "date": "2026-09-19",
       "exerciseId": "bear-crawl",
-      "feel": "ok",
-      "count": 35
+      "feel": "easy",
+      "count": 40
     },
     {
       "date": "2026-09-19",
       "exerciseId": "superman",
-      "feel": "ok",
-      "count": 30
+      "feel": "easy",
+      "count": 40
     },
     {
       "date": "2026-09-19",
       "exerciseId": "superman",
-      "feel": "ok",
-      "count": 30
+      "feel": "easy",
+      "count": 40
     },
     {
       "date": "2026-09-19",
       "exerciseId": "superman",
-      "feel": "ok",
-      "count": 30
+      "feel": "easy",
+      "count": 40
     },
     {
       "date": "2026-09-19",
       "exerciseId": "pushup-standard",
-      "feel": "ok",
+      "feel": "easy",
       "count": 10
     },
     {
       "date": "2026-09-19",
       "exerciseId": "pushup-standard",
-      "feel": "ok",
+      "feel": "easy",
       "count": 10
     },
     {
       "date": "2026-09-19",
       "exerciseId": "pushup-standard",
-      "feel": "ok",
+      "feel": "easy",
       "count": 10
     },
     {
@@ -467,56 +788,56 @@
     {
       "date": "2026-09-22",
       "exerciseId": "bear-crawl",
-      "feel": "ok",
-      "count": 35
+      "feel": "easy",
+      "count": 45
     },
     {
       "date": "2026-09-22",
       "exerciseId": "bear-crawl",
-      "feel": "ok",
-      "count": 35
+      "feel": "easy",
+      "count": 45
     },
     {
       "date": "2026-09-22",
       "exerciseId": "bear-crawl",
-      "feel": "ok",
-      "count": 35
+      "feel": "easy",
+      "count": 45
     },
     {
       "date": "2026-09-22",
       "exerciseId": "tricep-dip",
-      "feel": "ok",
-      "count": 10
-    },
-    {
-      "date": "2026-09-22",
-      "exerciseId": "tricep-dip",
-      "feel": "ok",
+      "feel": "easy",
       "count": 10
     },
     {
       "date": "2026-09-22",
       "exerciseId": "tricep-dip",
-      "feel": "ok",
+      "feel": "easy",
+      "count": 10
+    },
+    {
+      "date": "2026-09-22",
+      "exerciseId": "tricep-dip",
+      "feel": "easy",
       "count": 10
     },
     {
       "date": "2026-09-22",
       "exerciseId": "pushup-standard",
-      "feel": "ok",
-      "count": 10
+      "feel": "easy",
+      "count": 12
     },
     {
       "date": "2026-09-22",
       "exerciseId": "pushup-standard",
-      "feel": "ok",
-      "count": 10
+      "feel": "easy",
+      "count": 12
     },
     {
       "date": "2026-09-22",
       "exerciseId": "pushup-standard",
-      "feel": "ok",
-      "count": 10
+      "feel": "easy",
+      "count": 12
     },
     {
       "date": "2026-09-22",
@@ -545,13 +866,37 @@
       ]
     },
     {
-      "date": "2026-09-11",
+      "date": "2026-09-10",
       "exerciseIds": [
         "warmup-march",
         "warmup-shoulder-circle",
-        "squat-thrust",
-        "calf-raise",
-        "chair-squat",
+        "superman",
+        "pike-pushup",
+        "arm-circle",
+        "cooldown-shoulder-stretch",
+        "cooldown-calf-stretch"
+      ]
+    },
+    {
+      "date": "2026-09-12",
+      "exerciseIds": [
+        "warmup-march",
+        "warmup-shoulder-circle",
+        "bicycle-crunch",
+        "dead-bug",
+        "plank",
+        "cooldown-shoulder-stretch",
+        "cooldown-calf-stretch"
+      ]
+    },
+    {
+      "date": "2026-09-13",
+      "exerciseIds": [
+        "warmup-march",
+        "warmup-shoulder-circle",
+        "arm-circle",
+        "superman",
+        "bear-crawl",
         "cooldown-shoulder-stretch",
         "cooldown-calf-stretch"
       ]
@@ -576,6 +921,30 @@
         "wall-pushup",
         "squat-thrust",
         "bear-crawl",
+        "cooldown-shoulder-stretch",
+        "cooldown-calf-stretch"
+      ]
+    },
+    {
+      "date": "2026-09-17",
+      "exerciseIds": [
+        "warmup-march",
+        "warmup-shoulder-circle",
+        "lunge",
+        "single-calf-raise",
+        "chair-squat",
+        "cooldown-shoulder-stretch",
+        "cooldown-calf-stretch"
+      ]
+    },
+    {
+      "date": "2026-09-18",
+      "exerciseIds": [
+        "warmup-march",
+        "warmup-shoulder-circle",
+        "squat-thrust",
+        "wall-pushup",
+        "pike-pushup",
         "cooldown-shoulder-stretch",
         "cooldown-calf-stretch"
       ]
