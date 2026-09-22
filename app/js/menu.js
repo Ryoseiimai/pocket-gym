@@ -1,7 +1,7 @@
 // 今日のメニュー生成。乱数は使わず、日付文字列から導出した整数シードだけを使う
 // (同じ date + profile + exerciseState なら常に同じメニューになる=再現可能)。
 
-import { EXERCISES, availableEquipment, maxDifficultyFor } from "./exercises.js";
+import { EXERCISES, availableEquipment, suitableForExperience } from "./exercises.js";
 
 const BODY_PART_CYCLES = {
   2: ["full", "full"],
@@ -16,6 +16,7 @@ const SECONDS_PER_LEVEL = 5;
 const MIN_REPS = 5;
 const MIN_SECONDS = 15;
 const BASE_SETS = 3;
+const MAX_SETS = 4;
 const REST_SECONDS_REPS = 45;
 const REST_SECONDS_TIMED = 20;
 
@@ -86,31 +87,48 @@ export function planFor(exercise, level) {
   return { unit: "reps", sets, amount: reps, restSeconds: REST_SECONDS_REPS };
 }
 
+/** 部位ローテーション内で目的に合う種目を優先。同点はシード順を保つ。 */
+function goalPriority(exercise, goal) {
+  if (goal === "stamina") return Number(exercise.unit === "seconds") + Number(exercise.bodyPart === "full");
+  if (goal === "strength") return Number(exercise.unit === "reps");
+  if (goal === "posture") return Number(exercise.bodyPart === "core" || exercise.movement === "pull" || exercise.id === "superman");
+  return 0;
+}
+
+function fixedPhase(phase) {
+  return EXERCISES.filter((e) => e.phase === phase).map((e) => ({
+    exerciseId: e.id, phase, unit: "seconds", sets: 1,
+    amount: e.id === "warmup-march" ? 45 : 30, restSeconds: 0,
+  }));
+}
+
 /**
  * 今日のメニューを生成する(決定的)。
  * @param {object} profile - store.js の profile 形式
  * @param {string} dateStr - "YYYY-MM-DD"
  * @param {object} exerciseState - id -> { level }
- * @returns {Array<{exerciseId:string, unit:string, sets:number, amount:number, restSeconds:number}>}
+ * @returns {Array<{exerciseId:string, unit:string, sets:number, amount:number, restSeconds:number, phase:string}>}
  */
 export function generateMenu(profile, dateStr, exerciseState = {}) {
   if (!profile) return [];
   const equip = availableEquipment(profile.place);
-  const maxDiff = maxDifficultyFor(profile.experience);
   const bodyPart = bodyPartForDate(dateStr, profile.daysPerWeek);
   const count = exerciseCountFor(profile.minutes);
 
-  const eligible = EXERCISES.filter((e) => equip.has(e.equipment) && e.difficulty <= maxDiff);
+  const eligible = EXERCISES.filter((e) => !e.phase && equip.has(e.equipment) && suitableForExperience(e, profile.experience));
   const primary = bodyPart === "full" ? eligible : eligible.filter((e) => e.bodyPart === bodyPart || e.bodyPart === "full");
   const rest = eligible.filter((e) => !primary.includes(e));
 
   const seed = hashString(`${dateStr}|${profile.place}|${profile.experience}|${bodyPart}`);
   const rand = seededRandom(seed);
-  const pool = [...seededShuffle(primary, rand), ...seededShuffle(rest, seededRandom(seed ^ 0x9e3779b9))];
+  const prioritize = (items) => items.sort((a, b) => goalPriority(b, profile.goal) - goalPriority(a, profile.goal));
+  const pool = [...prioritize(seededShuffle(primary, rand)), ...prioritize(seededShuffle(rest, seededRandom(seed ^ 0x9e3779b9)))];
 
   const picked = pool.slice(0, count);
-  return picked.map((e) => {
+  const main = picked.map((e) => {
     const plan = planFor(e, levelOf(exerciseState, e.id));
-    return { exerciseId: e.id, ...plan };
+    if (profile.goal === "strength" && e.unit === "reps") plan.sets = Math.min(MAX_SETS, plan.sets + 1);
+    return { exerciseId: e.id, phase: "main", ...plan };
   });
+  return [...fixedPhase("warmup"), ...main, ...fixedPhase("cooldown")];
 }
