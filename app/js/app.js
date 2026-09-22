@@ -24,7 +24,10 @@ let settingsDraft = null;
 let workout = null; // { menu, index, feelsByExerciseId, resting, restRemaining, timerId }
 let importError = "";
 let resetConfirmStep = 0;
-let coachSpeech = null; // { coachId, expression, text } コーチが今しゃべっているセリフ
+let coachSpeech = null; // { coachId, expression, text, scene } コーチが今しゃべっているセリフ
+
+const COACH_AVATAR_SIZE = 88; // 今日の画面・実行中・休憩中
+const COACH_CELEBRATE_SIZE = 140; // 全種目完了のお祝い
 
 const root = document.getElementById("app");
 
@@ -55,7 +58,7 @@ function say(scene, seed, expression = "normal") {
   if (!coachId) return null;
   const line = pickLine(scene, coachId, seed);
   if (!line) return null;
-  coachSpeech = { coachId, expression, text: line.text };
+  coachSpeech = { coachId, expression, text: line.text, scene };
   playLine(coachId, line.id, state.profile.voiceOn !== false);
   return coachSpeech;
 }
@@ -75,13 +78,16 @@ function notice(text) {
   return el("p", { className: "notice" }, text);
 }
 
-// コーチのアバター+ふきだし。textNode を渡すと(休憩タイマーのように)フル再描画せずに
-// そのDOM要素のテキストだけを直接書き換えたい場面で使い回せる。
-function coachRow(textNode) {
+// コーチのアバター+ふきだし。全種目完了(allDone)のお祝いだけ大きく・弾みを強くする。
+function coachRow() {
   if (!coachSpeech) return null;
-  const bubble = textNode || el("p", { className: "speech-bubble" }, coachSpeech.text);
-  if (textNode) bubble.textContent = coachSpeech.text;
-  return el("div", { className: "coach-row" }, [coachSvg(coachSpeech.coachId, coachSpeech.expression, { size: 56 }), bubble]);
+  const celebrate = coachSpeech.scene === "allDone";
+  const bubble = el("p", { className: "speech-bubble" }, coachSpeech.text);
+  const avatar = coachSvg(coachSpeech.coachId, coachSpeech.expression, {
+    size: celebrate ? COACH_CELEBRATE_SIZE : COACH_AVATAR_SIZE,
+    className: celebrate ? "coach-avatar-celebrate" : undefined,
+  });
+  return el("div", { className: "coach-row" + (celebrate ? " coach-row-celebrate" : "") }, [avatar, bubble]);
 }
 
 function radioGroup(name, options, current, onChange) {
@@ -283,11 +289,18 @@ function beginRest(seconds) {
       if (workout.restRemaining === 10) {
         workout.restMessage = "もうすぐ再開です";
         if (workout.restStatus.isConnected) workout.restStatus.textContent = workout.restMessage;
-        // フル再描画すると休憩タイマーの見た目が乱れるため、ここはセリフのテキストと
-        // 音声だけを更新する(キャラの表情は休憩開始時のまま=意図的な簡略化)。
+        // フル再描画すると休憩タイマーの見た目が乱れるため、ここはコーチのテキスト・
+        // アバターSVG(表情をganbareへ)・音声だけを直接差し替える。
         say("restAlmostDone", `${todayStr()}-${workout.index}-${workout.setIndex}`, "ganbare");
-        if (coachSpeech && workout.coachTextNode && workout.coachTextNode.isConnected) {
-          workout.coachTextNode.textContent = coachSpeech.text;
+        if (coachSpeech) {
+          if (workout.coachTextNode && workout.coachTextNode.isConnected) {
+            workout.coachTextNode.textContent = coachSpeech.text;
+          }
+          if (workout.coachAvatarNode && workout.coachAvatarNode.isConnected) {
+            const freshAvatar = coachSvg(coachSpeech.coachId, coachSpeech.expression, { size: COACH_AVATAR_SIZE });
+            workout.coachAvatarNode.replaceWith(freshAvatar);
+            workout.coachAvatarNode = freshAvatar;
+          }
         }
       }
     }
@@ -308,6 +321,21 @@ function finishWorkout() {
   renderApp();
 }
 
+// 実行中/休憩中のコーチ行。休憩10秒前に表情だけを差し替えられるよう、テキスト・アバターの
+// DOMノードを workout に保持して使い回す(コーチを変えていない限り毎回作り直さない)。
+function workoutCoachRow() {
+  const textNode = workout.coachTextNode || el("p", { className: "speech-bubble" }, "");
+  workout.coachTextNode = textNode;
+  if (coachSpeech) textNode.textContent = coachSpeech.text;
+  const avatarNode = coachSvg(
+    coachSpeech ? coachSpeech.coachId : state.profile.coachId,
+    coachSpeech ? coachSpeech.expression : "normal",
+    { size: COACH_AVATAR_SIZE }
+  );
+  workout.coachAvatarNode = avatarNode;
+  return el("div", { className: "coach-row" }, [avatarNode, textNode]);
+}
+
 function renderWorkout() {
   const item = workout.menu[workout.index];
   const ex = exerciseById(item.exerciseId);
@@ -322,14 +350,10 @@ function renderWorkout() {
     if (status.isConnected && status.textContent !== message) status.textContent = message;
   }, 0);
 
-  // 休憩10秒前の更新はフル再描画せず直接テキストを書き換えるため、同じノードを使い回す。
-  const coachTextNode = workout.coachTextNode || el("p", { className: "speech-bubble" }, "");
-  workout.coachTextNode = coachTextNode;
-
   if (workout.resting) {
     return el("div", { className: "card workout-card" }, [
       el("p", { className: "progress-label" }, progressLabel),
-      coachRow(coachTextNode),
+      workoutCoachRow(),
       el("h2", {}, "休憩中"),
       el("p", { className: "rest-timer", "aria-hidden": "true" }, `${workout.restRemaining}秒`),
       status,
@@ -352,7 +376,7 @@ function renderWorkout() {
   const amountLabel = ex.unit === "seconds" ? `${item.amount}秒` : `${item.amount}回`;
   return el("div", { className: "card workout-card" }, [
     el("p", { className: "progress-label" }, progressLabel),
-    coachRow(coachTextNode),
+    workoutCoachRow(),
     status,
     el("h2", { className: "exercise-name" }, ex.name),
     el("p", { className: "exercise-amount" }, amountLabel),
