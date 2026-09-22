@@ -74,8 +74,9 @@ jobs:
             手順:
             1. README.md, app/SPEC.md, app/CONTRIBUTING.md, LESSONS.md(あれば)を読んで全体像を掴む
             2. autopilot/inbox/${{ steps.gate.outputs.date }}.json があれば読む（無ければ今日の新規の声は無し）
-            3. `gh issue list --state open --label idea,bug` で未対応のIssueも候補にする
-            4. 上記から改善案を1件選ぶ（候補が無ければ app/SPEC.md 記載の未実装点やUXの小さな改善を1件選ぶ）
+            3. `gh issue list --state open --label idea,bug,exercise` で未対応のIssueも候補にする
+            4. 上記から改善案を1件選ぶ（候補が無ければ `gh issue list --state open --label "good first issue"`
+               か app/SPEC.md 記載の未実装点やUXの小さな改善を1件選ぶ）
             5. 「運営そのものへの教訓」系の声（OSS初心者への助言など）があれば、個人名やXのハンドル名を
                一切出さずに要約して LESSONS.md に1〜3行追記する（存在しなければ新規作成してよい）
             6. 変更してよい範囲: app/**, index.html, lp.css, assets/**, LESSONS.md, README.md

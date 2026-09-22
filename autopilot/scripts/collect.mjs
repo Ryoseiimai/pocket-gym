@@ -117,7 +117,8 @@ function ghApi(args) {
 function collectGithub(state) {
   const items = [];
   const repo = process.env.GH_REPO || 'Ryoseiimai/pocket-gym';
-  const since = state.github_last_collect_at || '2026-09-23T00:00:00Z';
+  // 初回実行(state未設定)は直近24時間分だけ拾う。固定の絶対日付をハードコードしない。
+  const since = state.github_last_collect_at || new Date(Date.now() - 24 * 3600 * 1000).toISOString();
 
   // Issueコメント（新規Issue本文も含む: issuesエンドポイントで created>=since のものを拾う）
   const issuesRaw = ghApi([
