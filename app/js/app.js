@@ -145,9 +145,13 @@ function startWorkout() {
 }
 
 function stopTimer() {
-  if (workout && workout.timerId) {
+  if (workout && workout.timerId !== null) {
     window.clearInterval(workout.timerId);
     workout.timerId = null;
+  }
+  if (workout && workout.resting) {
+    const item = workout.menu[workout.index];
+    workout.restMessage = `休憩終了。次は${exerciseById(item.exerciseId).name} セット${workout.setIndex + 1}`;
   }
 }
 
@@ -178,17 +182,29 @@ function completeSet(feel) {
 }
 
 function beginRest(seconds) {
+  stopTimer();
   workout.resting = true;
   workout.restRemaining = seconds;
+  workout.restMessage = `休憩開始(${seconds}秒)`;
   renderApp();
   workout.timerId = window.setInterval(() => {
     workout.restRemaining -= 1;
     if (workout.restRemaining <= 0) {
       stopTimer();
       workout.resting = false;
-      renderApp();
-    } else {
-      renderApp();
+      try {
+        if (typeof navigator.vibrate === "function") navigator.vibrate([200, 100, 200]);
+      } catch {
+        // 振動を許可しない端末でもトレーニングを続けられるようにする。
+      }
+      if (currentTab === "today") renderApp();
+    } else if (currentTab === "today") {
+      const timer = document.querySelector(".rest-timer");
+      if (timer) timer.textContent = `${workout.restRemaining}秒`;
+      if (workout.restRemaining === 10) {
+        workout.restMessage = "残り10秒";
+        if (workout.restStatus.isConnected) workout.restStatus.textContent = workout.restMessage;
+      }
     }
   }, 1000);
 }
@@ -210,11 +226,21 @@ function renderWorkout() {
   const ex = exerciseById(item.exerciseId);
   const progressLabel = `種目 ${workout.index + 1} / ${workout.menu.length}　セット ${workout.setIndex + 1} / ${item.sets}`;
 
+  // 同じ通知領域を使い、DOMへの接続後に節目のメッセージだけを更新する。
+  const status = workout.restStatus || el("p", { className: "rest-status", "aria-live": "polite", "aria-atomic": "true" });
+  workout.restStatus = status;
+  const message = workout.restMessage || `次は${ex.name} セット${workout.setIndex + 1}`;
+  if (!workout.resting) workout.restMessage = "";
+  window.setTimeout(() => {
+    if (status.isConnected && status.textContent !== message) status.textContent = message;
+  }, 0);
+
   if (workout.resting) {
     return el("div", { className: "card workout-card" }, [
       el("p", { className: "progress-label" }, progressLabel),
       el("h2", {}, "休憩中"),
-      el("p", { className: "rest-timer" }, `${workout.restRemaining}秒`),
+      el("p", { className: "rest-timer", "aria-hidden": "true" }, `${workout.restRemaining}秒`),
+      status,
       el("p", {}, "次: " + ex.name),
       el(
         "button",
@@ -234,6 +260,7 @@ function renderWorkout() {
   const amountLabel = ex.unit === "seconds" ? `${item.amount}秒` : `${item.amount}回`;
   return el("div", { className: "card workout-card" }, [
     el("p", { className: "progress-label" }, progressLabel),
+    status,
     el("h2", { className: "exercise-name" }, ex.name),
     el("p", { className: "exercise-amount" }, amountLabel),
     el(
