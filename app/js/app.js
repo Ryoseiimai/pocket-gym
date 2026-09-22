@@ -241,7 +241,7 @@ function renderWorkout() {
       el("h2", {}, "休憩中"),
       el("p", { className: "rest-timer", "aria-hidden": "true" }, `${workout.restRemaining}秒`),
       status,
-      el("p", {}, "次: " + ex.name),
+      el("p", {}, "次のセット: " + ex.name),
       el(
         "button",
         {
