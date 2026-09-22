@@ -1,0 +1,9 @@
+{
+  "name": "pocket-gym-autopilot",
+  "private": true,
+  "type": "module",
+  "description": "毎日自動改善ループ(collect/announce)専用の依存関係置き場。app/には影響しない。",
+  "dependencies": {
+    "playwright": "^1.47.0"
+  }
+}

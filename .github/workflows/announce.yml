@@ -1,0 +1,124 @@
+name: autopilot-announce
+
+# (3/3) マージ済みPRのautopilot JSONから文言を組み、Pagesの配備完了を同期で待ってから
+# 本番をスクショしてXの募集スレッドに返信する。LLMは使わない。1日1投稿まで。
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'マージ済みPR番号'
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: autopilot-announce
+  cancel-in-progress: false
+
+jobs:
+  announce:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check autopilot enabled
+        id: gate
+        run: |
+          if [ "${{ vars.AUTOPILOT_ENABLED }}" != "true" ]; then
+            echo "AUTOPILOT_ENABLED が true ではないため終了します"
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "run=true" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.run == 'true'
+
+      - name: Extract autopilot JSON from PR body
+        if: steps.gate.outputs.run == 'true'
+        id: meta
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          body=$(gh pr view "${{ github.event.inputs.pr_number }}" --json body -q '.body' --repo "${{ github.repository }}")
+          json=$(echo "$body" | grep -oE '<!-- autopilot: .*-->' | sed -E 's/<!-- autopilot: (.*) -->/\1/' | head -1)
+          if [ -z "$json" ]; then
+            echo "autopilot JSONが見つかりません。既定文言で続行します。"
+            title="改善しました"
+            summary=""
+          else
+            title=$(echo "$json" | node -e "let s='';process.stdin.on('data',d=>s+=d);process.stdin.on('end',()=>{try{console.log(JSON.parse(s).title||'改善しました')}catch(e){console.log('改善しました')}})")
+            summary=$(echo "$json" | node -e "let s='';process.stdin.on('data',d=>s+=d);process.stdin.on('end',()=>{try{console.log(JSON.parse(s).summary||'')}catch(e){console.log('')}})")
+          fi
+          {
+            echo "title<<EOF"
+            echo "$title"
+            echo "EOF"
+            echo "summary<<EOF"
+            echo "$summary"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Wait for GitHub Pages build to complete
+        if: steps.gate.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          for i in $(seq 1 30); do
+            status=$(gh api "repos/${{ github.repository }}/pages/builds/latest" -q '.status' 2>/dev/null || echo "unknown")
+            echo "pages build status: $status"
+            if [ "$status" = "built" ]; then
+              break
+            fi
+            sleep 20
+          done
+
+      - uses: actions/setup-node@v4
+        if: steps.gate.outputs.run == 'true'
+        with:
+          node-version: '22'
+
+      - name: Install playwright (autopilot only)
+        if: steps.gate.outputs.run == 'true'
+        working-directory: autopilot
+        run: |
+          npm init -y >/dev/null 2>&1 || true
+          npm install --no-save playwright@1.47.0
+          npx playwright install --with-deps chromium
+
+      - name: Announce
+        if: steps.gate.outputs.run == 'true'
+        env:
+          X_CONSUMER_KEY: ${{ secrets.X_CONSUMER_KEY }}
+          X_CONSUMER_SECRET: ${{ secrets.X_CONSUMER_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+        working-directory: autopilot
+        run: |
+          node scripts/announce.mjs \
+            --title "${{ steps.meta.outputs.title }}" \
+            --summary "${{ steps.meta.outputs.summary }}" \
+            --screenshot-url "https://ryoseiimai.github.io/pocket-gym/app/"
+
+      - name: Commit updated threads.json
+        if: steps.gate.outputs.run == 'true'
+        run: |
+          git config user.name "pocket-gym-autopilot"
+          git config user.email "autopilot@users.noreply.github.com"
+          git add autopilot/threads.json
+          if git diff --cached --quiet; then
+            echo "変更なし"
+          else
+            git commit -m "autopilot: announce $(TZ=Asia/Tokyo date +%Y-%m-%d)"
+            git push
+          fi
+
+      - name: Report X quota exhausted
+        if: failure() && steps.gate.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create --repo "${{ github.repository }}" \
+            --title "[autopilot] announceが失敗しました" \
+            --body "announce.yml が失敗しました（X APIクレジット枯渇の可能性含む）。ログを確認してください。" \
+            --label "needs-human" || true

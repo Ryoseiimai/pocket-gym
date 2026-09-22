@@ -1,0 +1,87 @@
+name: autopilot-collect
+
+# (1/3) X返信・引用とGitHub Issues/Discussionsの新着を集めてautopilot/inbox/に正規化して書き出す。
+# LLMはここでは一切呼ばない。Xの鍵を持つのはこの段だけ（improve.ymlには渡さない）。
+# 完了後、improve.yml を明示的に起動する（GITHUB_TOKEN起点のpushは次のworkflowを自動起動しないため）。
+
+on:
+  schedule:
+    - cron: '23 22 * * *' # 毎日 07:23 JST ごろ（最大数時間遅れることがある）
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: autopilot-collect
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check autopilot enabled & date window
+        id: gate
+        run: |
+          enabled="${{ vars.AUTOPILOT_ENABLED }}"
+          if [ "$enabled" != "true" ]; then
+            echo "AUTOPILOT_ENABLED が true ではないため終了します（現在値: ${enabled}）"
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          today=$(TZ=Asia/Tokyo date +%Y-%m-%d)
+          if [[ "$today" > "2026-10-15" ]]; then
+            echo "10/15を過ぎたため自動では動きません（今日: ${today}）"
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "run=true" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.run == 'true'
+
+      - uses: actions/setup-node@v4
+        if: steps.gate.outputs.run == 'true'
+        with:
+          node-version: '22'
+
+      - name: Collect
+        if: steps.gate.outputs.run == 'true'
+        env:
+          X_CONSUMER_KEY: ${{ secrets.X_CONSUMER_KEY }}
+          X_CONSUMER_SECRET: ${{ secrets.X_CONSUMER_SECRET }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: node autopilot/scripts/collect.mjs
+
+      - name: Commit inbox & state
+        if: steps.gate.outputs.run == 'true'
+        run: |
+          git config user.name "pocket-gym-autopilot"
+          git config user.email "autopilot@users.noreply.github.com"
+          git add autopilot/inbox autopilot/threads.json autopilot/X_QUOTA_EXHAUSTED.flag 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "変更なし。コミットしません。"
+          else
+            git commit -m "autopilot: collect $(TZ=Asia/Tokyo date +%Y-%m-%d)"
+            git push
+          fi
+
+      - name: Report X quota exhausted
+        if: steps.gate.outputs.run == 'true'
+        run: |
+          if [ -f autopilot/X_QUOTA_EXHAUSTED.flag ]; then
+            gh issue create --repo "${{ github.repository }}" \
+              --title "[autopilot] Xクレジットが枯渇した可能性" \
+              --body "collect.yml で X API が 402 を返しました。本人によるクレジット追加が必要です。" \
+              --label "needs-human" || true
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Trigger improve.yml
+        if: steps.gate.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run improve.yml --repo "${{ github.repository }}"
