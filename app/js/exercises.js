@@ -177,8 +177,8 @@ export function maxDifficultyFor(experience) {
   return EXPERIENCE_MAX_DIFFICULTY[experience] || 2;
 }
 
-/** 「少しある」は上限3のうち衝撃系・片脚スクワットを除く（低難易度のジャンプも除外）。 */
+/** 「慣れている」以外は、難易度に関係なく衝撃系（ジャンプ・バーピー）と片脚スクワットを除く。 */
 export function suitableForExperience(exercise, experience) {
   return exercise.difficulty <= maxDifficultyFor(experience)
-    && (experience !== "some" || (exercise.impact !== "high" && !exercise.experiencedOnly));
+    && (experience === "experienced" || (exercise.impact !== "high" && !exercise.experiencedOnly));
 }

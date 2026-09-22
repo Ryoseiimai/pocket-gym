@@ -202,7 +202,7 @@ function beginRest(seconds) {
       const timer = document.querySelector(".rest-timer");
       if (timer) timer.textContent = `${workout.restRemaining}秒`;
       if (workout.restRemaining === 10) {
-        workout.restMessage = "残り10秒";
+        workout.restMessage = "もうすぐ再開です";
         if (workout.restStatus.isConnected) workout.restStatus.textContent = workout.restMessage;
       }
     }
@@ -380,7 +380,7 @@ function renderReflect() {
           { className: "chart-list" },
           exerciseIds.map((id) => {
             const ex = exerciseById(id);
-            if (!ex) return null;
+            if (!ex || ex.phase) return null; // 準備・整理運動は量が固定なので「伸び」には出さない
             return el("div", { className: "chart-item" }, [el("p", { className: "chart-title" }, ex.name), renderChart(id)]);
           }).filter(Boolean)
         ),

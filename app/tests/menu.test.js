@@ -148,7 +148,7 @@ test("準備・整理運動はセッション評価で保存レベルが変わ�
   }
 });
 
-test("少しあるはジャンプ系・バーピー・片脚スクワットを全日程と目的で除外", () => {
+test("はじめて・少しあるはジャンプ系・バーピー・片脚スクワットを全日程と目的で除外", () => {
   const excluded = new Set(["jump-squat", "jump-lunge", "jumping-jack", "burpee", "pistol-squat"]);
   const experiencedSeen = new Set();
   for (let day = 1; day <= 28; day++) {
@@ -157,6 +157,7 @@ test("少しあるはジャンプ系・バーピー・片脚スクワットを�
         const profile = baseProfile({ experience: "some", goal, place, minutes: 45 });
         const date = `2026-10-${String(day).padStart(2, "0")}`;
         assert.ok(generateMenu(profile, date).every((m) => !excluded.has(m.exerciseId)));
+        assert.ok(generateMenu({ ...profile, experience: "beginner" }, date).every((m) => !excluded.has(m.exerciseId)));
         for (const item of generateMenu({ ...profile, experience: "experienced" }, date)) experiencedSeen.add(item.exerciseId);
       }
     }
