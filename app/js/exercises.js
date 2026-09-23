@@ -129,19 +129,19 @@ export const EXERCISES = [
 
   // ---- ダンベルあり ----
   { id: "db-goblet-squat", name: "ダンベルゴブレットスクワット", bodyPart: "lower", equipment: "dumbbell", difficulty: 2, unit: "reps",
-    points: ["ダンベルを胸の前で両手で持つ", "スクワットと同じ要領でしゃがむ", "背筋をまっすぐ保つ"],
+    points: ["ダンベルを胸の前で両手で持つ", "スクワットと同じ要領でしゃがむ", "背筋をまっすぐ保つ", "最初は5〜8kg前後から、10回がちょうどきつい重さを選ぶ"],
     easierId: "squat", harderId: null },
   { id: "db-row", movement: "pull", name: "ダンベルロウ", bodyPart: "upper", equipment: "dumbbell", difficulty: 2, unit: "reps",
-    points: ["片手を椅子について前傾姿勢を作る", "肘を後ろに引くようにダンベルを引き上げる", "肩甲骨を寄せる意識で行う"],
+    points: ["片手を椅子について前傾姿勢を作る", "肘を後ろに引くようにダンベルを引き上げる", "肩甲骨を寄せる意識で行う", "最初は3〜5kg前後から、10回がちょうどきつい重さを選ぶ"],
     easierId: null, harderId: null },
   { id: "db-shoulder-press", name: "ダンベルショルダープレス", bodyPart: "upper", equipment: "dumbbell", difficulty: 2, unit: "reps",
-    points: ["ダンベルを肩の高さで構える", "頭上へまっすぐ押し上げる", "反動を使わずゆっくり下ろす"],
+    points: ["ダンベルを肩の高さで構える", "頭上へまっすぐ押し上げる", "反動を使わずゆっくり下ろす", "最初は2〜4kg前後から、10回がちょうどきつい重さを選ぶ"],
     easierId: "pike-pushup", harderId: null },
   { id: "db-lunge", name: "ダンベルランジ", bodyPart: "lower", equipment: "dumbbell", difficulty: 3, unit: "reps",
-    points: ["両手にダンベルを持ち体側で構える", "ランジと同じ要領で踏み込む", "上体をぶらさない"],
+    points: ["両手にダンベルを持ち体側で構える", "ランジと同じ要領で踏み込む", "上体をぶらさない", "最初は片手3〜5kg前後から、10回がちょうどきつい重さを選ぶ"],
     easierId: "lunge", harderId: null },
   { id: "db-deadlift", name: "ダンベルデッドリフト", bodyPart: "lower", equipment: "dumbbell", difficulty: 3, unit: "reps",
-    points: ["ダンベルを太もも前で構える", "股関節を折りたたむように前傾", "背中をまっすぐ保ったまま戻す"],
+    points: ["ダンベルを太もも前で構える", "股関節を折りたたむように前傾", "背中をまっすぐ保ったまま戻す", "最初は片手5〜8kg前後から、10回がちょうどきつい重さを選ぶ"],
     easierId: "glute-bridge", harderId: null },
 
   // ---- ジム ----
