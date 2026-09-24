@@ -514,7 +514,18 @@ function renderSettings() {
     ),
     el("p", { className: "disclaimer" }, "このアプリは医療・診断の助言はしません。痛みが出たらすぐに中止し、持病がある方は医師に相談してください。"),
     el("hr"),
+    renderHomeScreenGuide(),
+    el("hr"),
     dangerZone,
+  ]);
+}
+
+function renderHomeScreenGuide() {
+  return el("div", { className: "home-screen-guide" }, [
+    el("h3", {}, "ホーム画面に追加する"),
+    notice("毎日開きやすいように、スマホのホーム画面にアイコンを置けます。"),
+    el("p", {}, "iPhone(Safari): 下の共有アイコンをタップ →「ホーム画面に追加」を選ぶ。"),
+    el("p", {}, "Android(Chrome): 右上のメニュー(⋮)をタップ →「ホーム画面に追加」を選ぶ。"),
   ]);
 }
 

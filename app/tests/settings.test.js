@@ -102,6 +102,12 @@ test("設定の全項目は再描画をまたいで保持され、保存時に�
     ["目的", "経験", "場所と器具", "週の回数", "1回の時間"]);
 });
 
+test("設定タブにホーム画面追加の案内が表示される", async t => {
+  const ui = await setup(t);
+  assert.ok(ui.root.textContent.includes("ホーム画面に追加する"));
+  assert.ok(ui.root.textContent.includes("ホーム画面に追加"));
+});
+
 test("インポートは読み込み前に4MB上限を確認し、成功時に設定ドラフトを更新する", async t => {
   const ui = await setup(t);
   ui.click("筋力アップ");
