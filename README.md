@@ -35,6 +35,72 @@
 
 Pull Requestを送る場合のやり方は [CONTRIBUTING.md](./CONTRIBUTING.md) を参照してください。
 
+## 一緒に作る人へ
+
+### 5分で動かす
+
+```bash
+git clone https://github.com/Ryoseiimai/pocket-gym.git
+cd pocket-gym
+python3 -m http.server 8080
+# http://localhost:8080/app/ をブラウザで開く（紹介ページは http://localhost:8080/）
+node --test app/tests/*.test.js
+```
+
+依存ライブラリ・ビルドは不要です（ビルド不要の素の HTML/CSS/ES Modules）。
+
+### 構成
+
+```
+index.html, lp.css      … 紹介ページ（ルート）
+app/
+  index.html             … アプリ本体のエントリ
+  js/
+    app.js                … 画面遷移・イベント配線
+    dom.js                 … DOM構築（el()/svgEl()のみ。innerHTML禁止）
+    store.js                … localStorage(キー pocketgym.v1)の読み書き・スキーマ検証
+    exercises.js             … 種目データ
+    menu.js                   … 今日のメニュー生成ロジック
+    progress.js                … セット完了時の自動調整(楽/ちょうど/きつい)
+    stats.js                     … 記録・振り返り集計
+    native.js                     … Capacitor(iOS)プラグイン連携。Webでは何もしない
+  tests/                  … node --test 用のユニットテスト
+  SPEC.md, SECURITY.md, CONTRIBUTING.md … 詳しい仕様・セキュリティ要件・種目追加手順
+autopilot/               … 毎日1件、Issue/Discussions/Xの声から自動改善PRを作って自動マージする仕組み
+  README.md               … 仕組みの構成図・止め方・鍵一覧
+.github/workflows/       … CI(ci.yml)とautopilotの3段(collect/improve/announce)
+```
+
+### テスト・静的検査
+
+```bash
+node --test app/tests/*.test.js                      # ユニットテスト
+for f in app/js/*.js; do node --check "$f"; done      # 構文チェック
+bash .github/scripts/static-checks.sh .               # innerHTML禁止・CSP等の禁止パターン検出
+```
+
+PRを送るとCI（`.github/workflows/ci.yml`）が同じ検査を自動で回します。
+
+### iOSビルド
+
+[iOS でビルドする](#ios-でビルドする) を参照してください。
+
+### 最初の一歩によい課題
+
+ラベル [`good first issue`](https://github.com/Ryoseiimai/pocket-gym/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) が付いたIssueから選んでください。困ったら [Discussions](https://github.com/Ryoseiimai/pocket-gym/discussions) か Issue へのコメントで聞いてもらえれば答えます。
+
+### PRの流れ
+
+[CONTRIBUTING.md](./CONTRIBUTING.md) の手順（フォーク→ブランチ→テスト→PR）でお願いします。守ってほしいこと（依存追加禁止・`innerHTML`禁止・個人情報を扱う機能を追加しない）も同ファイルに書いてあります。
+
+### 毎朝の自動改善ループ（autopilot）との付き合い方
+
+10/15まで、GitHub Actionsが毎朝 `autopilot/` 以下の声（X返信・Issue/Discussions）を読み、1日1件だけ小さな改善を実装して `autopilot/YYYY-MM-DD` ブランチでPRを作り、許可パス（`app/`・`index.html`・`lp.css`・`assets/`・`LESSONS.md`・`README.md`）内かつテスト・静的検査が通る場合だけ自動マージします。`.github/**` や `autopilot/scripts/**` には触らず、触る必要がある提案は `needs-human` ラベルが付いて人（本人）の確認待ちになります。仕組みの詳細は [autopilot/README.md](./autopilot/README.md) を参照してください。あなたが送るPRとautopilotのPRが競合しても、通常のPRと同じくレビューで調整します。
+
+### 音声ファイルについて（coach-characters ブランチ）
+
+未マージのブランチ `coach-characters` にはコーチキャラの音声合成ファイル（VOICEVOX「ずんだもん」で生成した `app/voice/**/*.m4a`）が含まれます。**リポジトリ本体は MIT License ですが、この音声ファイルは MIT の対象外**で、VOICEVOX とずんだもんそれぞれの利用規約に従う必要があります（詳細は同ブランチの `app/voice/README.md`）。再配布・改変する場合は必ず規約を確認し、クレジット表記を残してください。
+
 ## ローカルで動かす
 
 ```bash
