@@ -1,0 +1,12 @@
+[
+  {
+    "source": "github_issue",
+    "id": "issue-22",
+    "text": "[autopilot] announceが失敗しました\nannounce.yml が失敗しました（X APIクレジット枯渇の可能性含む）。ログを確認してください。"
+  },
+  {
+    "source": "github_issue",
+    "id": "issue-20",
+    "text": "[autopilot] Xクレジットが枯渇した可能性\ncollect.yml で X API が 402 を返しました。本人によるクレジット追加が必要です。"
+  }
+]
