@@ -1,0 +1,12 @@
+[
+  {
+    "source": "github_issue",
+    "id": "issue-24",
+    "text": "[autopilot] improveが失敗しました 2026-09-25\nimprove.yml が失敗しました（Claude の認証切れ・利用上限の可能性を含む）。[URL除去]"
+  },
+  {
+    "source": "github_issue",
+    "id": "issue-23",
+    "text": "[autopilot] Xクレジットが枯渇した可能性\ncollect.yml で X API が 402 を返しました。本人によるクレジット追加が必要です。"
+  }
+]
