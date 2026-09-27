@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { validateImport, emptyState, defaultProfile, saveState, MAX_ARRAY_LEN } from "../js/store.js";
 import { EXERCISES } from "../js/exercises.js";
+import { COACHES, DEFAULT_COACH_ID } from "../js/coach-art.js";
 
 const exId = EXERCISES[0].id;
 
@@ -132,6 +133,41 @@ test("saveState はサイズ超過時に setItem を呼ばず false を返す(�
   } finally {
     globalThis.window = originalWindow;
   }
+});
+
+test("defaultProfile は既定コーチ(声オン)を含む", () => {
+  const profile = defaultProfile();
+  assert.equal(profile.coachId, DEFAULT_COACH_ID);
+  assert.equal(profile.voiceOn, true);
+});
+
+test("validateImport は coachId/voiceOn が無い古いデータでも既定コーチ・声オンとして読める", () => {
+  const legacyProfile = {
+    goal: "tighten",
+    experience: "beginner",
+    place: "home-none",
+    daysPerWeek: 3,
+    minutes: 30,
+    onboarded: true,
+  }; // coachId/voiceOn を持たない旧バージョンのプロフィール
+  const result = validateImport(validData({ profile: legacyProfile }));
+  assert.equal(result.ok, true);
+  assert.equal(result.data.profile.coachId, DEFAULT_COACH_ID);
+  assert.equal(result.data.profile.voiceOn, true);
+});
+
+test("validateImport は壊れた/未知のcoachIdでも拒否せず既定コーチへフォールバックする", () => {
+  const result = validateImport(validData({ profile: { ...defaultProfile(), onboarded: true, coachId: "not-a-coach" } }));
+  assert.equal(result.ok, true);
+  assert.equal(result.data.profile.coachId, DEFAULT_COACH_ID);
+});
+
+test("validateImport は正しいcoachId/voiceOn:falseをそのまま保持する", () => {
+  const otherCoach = COACHES.find((c) => c.id !== DEFAULT_COACH_ID).id;
+  const result = validateImport(validData({ profile: { ...defaultProfile(), onboarded: true, coachId: otherCoach, voiceOn: false } }));
+  assert.equal(result.ok, true);
+  assert.equal(result.data.profile.coachId, otherCoach);
+  assert.equal(result.data.profile.voiceOn, false);
 });
 
 test("saveState は正常時に true を返し setItem を1回呼ぶ", () => {

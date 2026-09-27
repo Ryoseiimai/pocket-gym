@@ -37,8 +37,11 @@ async function setup(t, native = false) {
   globalThis.document = {
     getElementById: () => root,
     createElement: tag => new TestNode(tag),
+    createElementNS: (_ns, tag) => new TestNode(tag),
     createTextNode: text => new TestNode("text", text),
     querySelector: selector => nodes().find(n => n.className === selector.slice(1)),
+    addEventListener: () => {},
+    removeEventListener: () => {},
   };
   globalThis.window = {
     localStorage: {
@@ -86,7 +89,8 @@ test("設定の全項目は再描画をまたいで保持され、保存時に�
   ui.selected("筋力アップ");
   ui.click("この内容で保存");
   assert.deepEqual(ui.saved().profile, {
-    goal: "strength", experience: "experienced", place: "gym", daysPerWeek: 4, minutes: 45, onboarded: true,
+    goal: "strength", experience: "experienced", place: "gym", daysPerWeek: 4, minutes: 45,
+    coachId: "mochimaru", voiceOn: true, onboarded: true,
   });
   ui.click("体力づくり");
   assert.equal(ui.saved().profile.goal, "strength");
@@ -99,7 +103,32 @@ test("設定の全項目は再描画をまたいで保持され、保存時に�
   assert.equal(ui.button("今日").attrs["aria-current"], undefined);
   assert.equal(ui.button("体力づくり").attrs["aria-pressed"], "false");
   assert.deepEqual(ui.nodes().filter(n => n.attrs.role === "group").map(n => n.attrs["aria-label"]),
-    ["目的", "経験", "場所と器具", "週の回数", "1回の時間"]);
+    ["コーチ", "声", "目的", "経験", "場所と器具", "週の回数", "1回の時間"]);
+});
+
+test("コーチと声のオン/オフは選び直して保存できる", async t => {
+  const ui = await setup(t);
+  ui.click("設定");
+  ui.selected("もちまる");
+  ui.selected("オン");
+  assert.ok(ui.root.textContent.includes("元気: 元気いっぱい応援するのだ"));
+  ui.click("ころん");
+  ui.selected("ころん");
+  assert.ok(ui.root.textContent.includes("ちょっと厳しめ: そこ、もう一声いけるでしょ"));
+  ui.click("オフ");
+  ui.selected("オフ");
+  assert.equal(ui.saved().profile.coachId, "mochimaru"); // 保存前はまだ反映されない
+  ui.click("この内容で保存");
+  assert.equal(ui.saved().profile.coachId, "koron");
+  assert.equal(ui.saved().profile.voiceOn, false);
+});
+
+test("今日のメニュー画面と振り返り画面でコーチのひとことが表示される", async t => {
+  const ui = await setup(t);
+  ui.click("今日");
+  assert.ok(ui.nodes().some(n => n.className === "speech-bubble" && n.textContent.length > 0));
+  ui.click("振り返り");
+  assert.ok(ui.nodes().some(n => n.className === "speech-bubble" && n.textContent.length > 0));
 });
 
 test("設定タブにホーム画面追加の案内が表示される", async t => {
