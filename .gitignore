@@ -1,10 +1,6 @@
 .DS_Store
 node_modules/
 
-# コーチキャラの声(VOICEVOX/ずんだもん)。利用条件確認待ちのため未マージ。
-# 確認が取れたら .github/scripts 等は変更せず、このファイルからこの行を消してから追加する。
-app/voice/**/*.m4a
-
 # App Store Connect の画面控え（ブックマーク等が写るため公開しない）
 store/控え/
 www-ios/
