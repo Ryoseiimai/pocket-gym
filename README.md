@@ -97,9 +97,9 @@ PRを送るとCI（`.github/workflows/ci.yml`）が同じ検査を自動で回�
 
 10/15まで、GitHub Actionsが毎朝 `autopilot/` 以下の声（X返信・Issue/Discussions）を読み、1日1件だけ小さな改善を実装して `autopilot/YYYY-MM-DD` ブランチでPRを作り、許可パス（`app/`・`index.html`・`lp.css`・`assets/`・`LESSONS.md`・`README.md`）内かつテスト・静的検査が通る場合だけ自動マージします。`.github/**` や `autopilot/scripts/**` には触らず、触る必要がある提案は `needs-human` ラベルが付いて人（本人）の確認待ちになります。仕組みの詳細は [autopilot/README.md](./autopilot/README.md) を参照してください。あなたが送るPRとautopilotのPRが競合しても、通常のPRと同じくレビューで調整します。
 
-### 音声ファイルについて（coach-characters ブランチ）
+### 音声ファイルについて（コーチキャラ）
 
-未マージのブランチ `coach-characters` にはコーチキャラの音声合成ファイル（VOICEVOX「ずんだもん」で生成した `app/voice/**/*.m4a`）が含まれます。**リポジトリ本体は MIT License ですが、この音声ファイルは MIT の対象外**で、VOICEVOX とずんだもんそれぞれの利用規約に従う必要があります（詳細は同ブランチの `app/voice/README.md`）。再配布・改変する場合は必ず規約を確認し、クレジット表記を残してください。
+コーチキャラの音声合成ファイル（VOICEVOX「ずんだもん」で生成した `app/voice/**/*.m4a`）が含まれます。**リポジトリ本体は MIT License ですが、この音声ファイルは MIT の対象外**で、VOICEVOX とずんだもんそれぞれの利用規約に従う必要があります（詳細は [LICENSE](./LICENSE) と [app/voice/README.md](./app/voice/README.md)）。再配布・改変する場合は必ず規約を確認し、クレジット表記「VOICEVOX:ずんだもん」を残してください。
 
 ## ローカルで動かす
 
@@ -159,4 +159,4 @@ node --test app/tests/*.test.js
 
 ## ライセンス
 
-MIT License。詳細は [app/LICENSE](./app/LICENSE) を参照してください。
+ソースコードは MIT License。詳細は [LICENSE](./LICENSE) を参照してください。ただし `app/voice/**/*.m4a`（コーチキャラの声）は MIT の対象外で、VOICEVOX と「ずんだもん」それぞれの利用規約に従います（[LICENSE](./LICENSE) の該当節・[app/voice/README.md](./app/voice/README.md) を参照）。
