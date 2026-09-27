@@ -2,6 +2,7 @@
 // DOM に依存しないため node:test でスキーマ検証だけ単体テストできる。
 
 import { EXERCISES } from "./exercises.js";
+import { COACHES, DEFAULT_COACH_ID } from "./coach-art.js";
 
 export const STORAGE_KEY = "pocketgym.v1";
 export const MAX_BYTES = 4 * 1024 * 1024; // 4MB
@@ -9,6 +10,7 @@ export const MAX_ARRAY_LEN = 10000;
 export const MAX_STRING_LEN = 500;
 
 const EXERCISE_IDS = new Set(EXERCISES.map((e) => e.id));
+const COACH_IDS = new Set(COACHES.map((c) => c.id));
 const GOALS = ["tighten", "strength", "stamina", "posture"];
 const EXPERIENCES = ["beginner", "some", "experienced"];
 const PLACES = ["home-none", "home-dumbbell", "gym"];
@@ -36,6 +38,8 @@ export function defaultProfile() {
     place: "home-none",
     daysPerWeek: 3,
     minutes: 30,
+    coachId: DEFAULT_COACH_ID,
+    voiceOn: true,
     onboarded: false,
   };
 }
@@ -70,6 +74,10 @@ function sanitizeProfile(raw) {
     place: raw.place,
     daysPerWeek: raw.daysPerWeek,
     minutes: raw.minutes,
+    // coachId/voiceOn は既存データに無くても(または壊れていても)読めるよう、
+    // 不正なら初期値にフォールバックする(exerciseStateの未知IDを無視する方針と同じ)。
+    coachId: COACH_IDS.has(raw.coachId) ? raw.coachId : DEFAULT_COACH_ID,
+    voiceOn: raw.voiceOn === false ? false : true,
     onboarded: raw.onboarded === true,
   };
 }
