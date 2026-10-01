@@ -3,7 +3,7 @@ import { loadState, saveState, validateImport, defaultProfile, emptyState, MAX_B
 import { exerciseById } from "./exercises.js";
 import { generateMenu } from "./menu.js";
 import { applySessionResults } from "./progress.js";
-import { weeklySessionCount, currentStreak, levelHistoryFor, toSvgPoints, totalSetsByExercise } from "./stats.js";
+import { weeklySessionCount, currentStreak, levelHistoryFor, toSvgPoints, totalSetsByExercise, completionSummary } from "./stats.js";
 import { haptic, keepAwake } from "./native.js";
 import { COACHES, coachSvg } from "./coach-art.js";
 import { pickLine } from "./coach-lines.js";
@@ -22,6 +22,7 @@ let currentTab = "today";
 let onboardingDraft = defaultProfile();
 let settingsDraft = null;
 let workout = null; // { menu, index, feelsByExerciseId, resting, restRemaining, timerId }
+let finishSummary = ""; // 完了直後だけ今日タブに出す連続日数・今週の回数
 let importError = "";
 let resetConfirmStep = 0;
 let coachSpeech = null; // { coachId, expression, text, scene } コーチが今しゃべっているセリフ
@@ -66,6 +67,7 @@ function say(scene, seed, expression = "normal") {
 function switchTab(tab) {
   if (tab === "settings" && currentTab !== "settings") settingsDraft = null;
   currentTab = tab;
+  finishSummary = "";
   if (state.profile && state.profile.onboarded && !workout) {
     if (tab === "today") say("greeting", todayStr(), "normal");
     else if (tab === "reflect") say("reflect", todayStr(), "normal");
@@ -220,6 +222,7 @@ function menuForToday() {
 function startWorkout() {
   const menu = menuForToday();
   if (menu.length === 0) return;
+  finishSummary = "";
   workout = { menu, index: 0, setIndex: 0, feelsByExerciseId: {}, resting: false, restRemaining: 0, timerId: null };
   say("workoutStart", todayStr(), "ganbare");
   void keepAwake(true);
@@ -317,6 +320,7 @@ function finishWorkout() {
   state = { ...state, exerciseState, sessions };
   persist();
   workout = null;
+  finishSummary = completionSummary(sessions, date);
   say("allDone", date, "smile");
   renderApp();
 }
@@ -412,6 +416,7 @@ function renderToday() {
   const children = [
     el("h2", {}, "今日のメニュー"),
     coachRow(),
+    finishSummary ? notice(finishSummary) : null,
     doneToday ? notice("今日はもう完了しています。おつかれさまでした。") : null,
   ];
 

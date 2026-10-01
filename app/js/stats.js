@@ -44,6 +44,14 @@ export function currentStreak(sessions, todayStr) {
   return streak;
 }
 
+/** 完了直後に見せるお祝い文。連続日数と今週の回数から作る */
+export function completionSummary(sessions, todayStr) {
+  const streak = currentStreak(sessions, todayStr);
+  const week = weeklySessionCount(sessions, todayStr);
+  const streakText = streak >= 2 ? `${streak}日連続！` : "";
+  return `${streakText}今週${week}回目`;
+}
+
 function shiftDate(dateStr, deltaDays) {
   const d = toDate(dateStr);
   d.setUTCDate(d.getUTCDate() + deltaDays);
