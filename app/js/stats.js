@@ -44,6 +44,15 @@ export function currentStreak(sessions, todayStr) {
   return streak;
 }
 
+/** 完了直後に見せる達成メッセージ(連続日数・今週の回数)。今日未実施なら空文字 */
+export function achievementMessage(sessions, todayStr) {
+  if (!sessions.some((s) => s.date === todayStr)) return "";
+  const streak = currentStreak(sessions, todayStr);
+  const weekly = weeklySessionCount(sessions, todayStr);
+  const streakText = streak >= 2 ? `${streak}日連続！` : "";
+  return `${streakText}今週${weekly}回目。`;
+}
+
 function shiftDate(dateStr, deltaDays) {
   const d = toDate(dateStr);
   d.setUTCDate(d.getUTCDate() + deltaDays);
