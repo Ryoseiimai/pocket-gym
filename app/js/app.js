@@ -3,7 +3,7 @@ import { loadState, saveState, validateImport, defaultProfile, emptyState, MAX_B
 import { exerciseById } from "./exercises.js";
 import { generateMenu } from "./menu.js";
 import { applySessionResults } from "./progress.js";
-import { weeklySessionCount, currentStreak, levelHistoryFor, toSvgPoints, totalSetsByExercise } from "./stats.js";
+import { weeklySessionCount, currentStreak, levelHistoryFor, toSvgPoints, totalSetsByExercise, achievementMessage } from "./stats.js";
 import { haptic, keepAwake } from "./native.js";
 import { COACHES, coachSvg } from "./coach-art.js";
 import { pickLine } from "./coach-lines.js";
@@ -412,7 +412,7 @@ function renderToday() {
   const children = [
     el("h2", {}, "今日のメニュー"),
     coachRow(),
-    doneToday ? notice("今日はもう完了しています。おつかれさまでした。") : null,
+    doneToday ? notice("今日はもう完了しています。おつかれさまでした。" + achievementMessage(state.sessions, todayStr())) : null,
   ];
 
   if (menu.length === 0) {

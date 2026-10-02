@@ -1,6 +1,16 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { weeklySessionCount, currentStreak, levelHistoryFor, toSvgPoints, totalSetsByExercise } from "../js/stats.js";
+import { weeklySessionCount, currentStreak, levelHistoryFor, toSvgPoints, totalSetsByExercise, achievementMessage } from "../js/stats.js";
+
+test("achievementMessage は連続日数と今週の回数を返す", () => {
+  const d = (date) => ({ date, exerciseIds: [] });
+  assert.equal(achievementMessage([d("2026-10-01")], "2026-10-02"), "");
+  assert.equal(achievementMessage([d("2026-10-02")], "2026-10-02"), "今週1回目。");
+  assert.equal(
+    achievementMessage([d("2026-09-30"), d("2026-10-01"), d("2026-10-02")], "2026-10-02"),
+    "3日連続！今週3回目。"
+  );
+});
 
 test("weeklySessionCount は直近7日以内のセッション日数を数える", () => {
   const sessions = [
