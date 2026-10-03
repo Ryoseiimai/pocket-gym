@@ -1,0 +1,7 @@
+[
+  {
+    "source": "github_issue",
+    "id": "issue-36",
+    "text": "[autopilot] Xクレジットが枯渇した可能性\ncollect.yml で X API が 402 を返しました。本人によるクレジット追加が必要です。"
+  }
+]
