@@ -76,6 +76,14 @@ test("planFor は最低回数/秒数を下回らない", () => {
   assert.ok(plan.amount >= 5);
 });
 
+test("planFor は種目の大きさに合わせて回数系の休憩秒を変える", () => {
+  const rest = (e) => planFor({ unit: "reps", ...e }, 0).restSeconds;
+  assert.equal(rest({ id: "burpee", bodyPart: "full" }), 60);
+  assert.equal(rest({ id: "squat", bodyPart: "lower" }), 60);
+  assert.equal(rest({ id: "calf-raise", bodyPart: "lower" }), 30);
+  assert.equal(rest({ id: "pushup", bodyPart: "upper" }), 45);
+});
+
 test("hashString は同じ文字列に対して常に同じ値を返す", () => {
   assert.equal(hashString("abc"), hashString("abc"));
   assert.notEqual(hashString("abc"), hashString("abd"));

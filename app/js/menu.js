@@ -18,6 +18,8 @@ const MIN_SECONDS = 15;
 const BASE_SETS = 3;
 const MAX_SETS = 4;
 const REST_SECONDS_REPS = 45;
+const REST_SECONDS_REPS_LONG = 60; // 全身・下半身など大きい種目
+const REST_SECONDS_REPS_SHORT = 30; // カーフレイズなど小さい種目
 const REST_SECONDS_TIMED = 20;
 
 /** 文字列から決定的な32bit整数を作る(FNV-1aベース) */
@@ -76,6 +78,13 @@ function levelOf(exerciseState, id) {
   return s && typeof s.level === "number" ? s.level : 0;
 }
 
+/** 回数系種目の休憩秒。大きい種目は長め、小さい種目は短め。 */
+function restSecondsForReps(exercise) {
+  if (typeof exercise.id === "string" && exercise.id.includes("calf-raise")) return REST_SECONDS_REPS_SHORT;
+  if (exercise.bodyPart === "full" || exercise.bodyPart === "lower") return REST_SECONDS_REPS_LONG;
+  return REST_SECONDS_REPS;
+}
+
 /** 種目1件分のセット・回数(秒数)・休憩秒を、現在のレベルから計算する */
 export function planFor(exercise, level) {
   const sets = BASE_SETS;
@@ -84,7 +93,7 @@ export function planFor(exercise, level) {
     return { unit: "seconds", sets, amount: seconds, restSeconds: REST_SECONDS_TIMED };
   }
   const reps = Math.max(MIN_REPS, BASE_REPS + level * REPS_PER_LEVEL);
-  return { unit: "reps", sets, amount: reps, restSeconds: REST_SECONDS_REPS };
+  return { unit: "reps", sets, amount: reps, restSeconds: restSecondsForReps(exercise) };
 }
 
 /** 部位ローテーション内で目的に合う種目を優先。同点はシード順を保つ。 */
