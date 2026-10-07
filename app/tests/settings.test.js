@@ -193,6 +193,7 @@ test("トレーニング開始・セット完了・休憩終了・全種目完�
     }
   }
   assert.ok(ui.button("もう一度やる"), "全種目を完了できる");
+  assert.ok(ui.root.textContent.includes("連続1日・今週1回目です"), "完了直後に連続日数と今週の回数を表示する");
   assert.ok(testedRest, "休憩タイマーを検証した");
   assert.deepEqual(ui.nativeCalls.filter(([name]) => name === "notification"), [["notification", { type: "SUCCESS" }]]);
   assert.equal(ui.nativeCalls.filter(([name]) => name === "impact").length, completedSets);
