@@ -489,7 +489,7 @@ function renderReflect() {
     el("h2", {}, "振り返り"),
     coachRow(),
     el("div", { className: "stat-row" }, [
-      el("div", { className: "stat-box" }, [el("div", { className: "stat-num" }, String(weekly)), el("div", { className: "stat-label" }, "今週の実施回数")]),
+      el("div", { className: "stat-box" }, [el("div", { className: "stat-num" }, String(weekly)), el("div", { className: "stat-label" }, "直近7日の実施回数")]),
       el("div", { className: "stat-box" }, [el("div", { className: "stat-num" }, String(streak)), el("div", { className: "stat-label" }, "連続日数")]),
     ]),
     el("h3", {}, "種目別の伸び"),
