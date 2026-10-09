@@ -44,6 +44,14 @@ export function currentStreak(sessions, todayStr) {
   return streak;
 }
 
+/** 完了直後に見せる達成感メッセージ(連続日数が2日以上なら併記) */
+export function achievementMessage(sessions, todayStr) {
+  const week = weeklySessionCount(sessions, todayStr);
+  const streak = currentStreak(sessions, todayStr);
+  const weekText = `今週${week}回目`;
+  return streak >= 2 ? `${streak}日連続！${weekText}` : weekText;
+}
+
 function shiftDate(dateStr, deltaDays) {
   const d = toDate(dateStr);
   d.setUTCDate(d.getUTCDate() + deltaDays);
