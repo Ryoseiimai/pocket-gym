@@ -64,7 +64,12 @@ jobs:
           # collect.yml が `gh workflow run` で起動するため actor は github-actions[bot] になる。
           # これを許可しないと非人間アクターとして拒否される（claude-code-actionの新しい安全策）。
           allowed_bots: "github-actions"
-          claude_args: --allowedTools "Bash(git:*),Bash(gh:*),Bash(node:*),Edit,Write,Read,Glob,Grep,MultiEdit"
+          # 不特定多数が書いたX返信・Issue本文(「信用できない入力」)をこのエージェントに読ませるため、
+          # Bash(git:*) / Bash(gh:*) / Bash(node:*) のような全体ワイルドカードは渡さない。
+          # プロンプト注入で指示を乗っ取られても、下の手順(1〜10)が実際に使うサブコマンドだけに
+          # 実行できる範囲を絞る(gh secret/variable/api/workflow/run/release/repo/auth、
+          # gh pr merge、node -e 等の任意コード実行は不許可)。
+          claude_args: --allowedTools "Bash(git checkout:*),Bash(git switch:*),Bash(git add:*),Bash(git commit:*),Bash(git push:*),Bash(git status:*),Bash(git diff:*),Bash(git log:*),Bash(gh issue list:*),Bash(gh issue view:*),Bash(gh pr create:*),Bash(gh pr view:*),Bash(gh pr list:*),Bash(node --test:*),Edit,Write,Read,Glob,Grep,MultiEdit"
           prompt: |
             あなたは公開OSS「ポケットジム」(https://ryoseiimai.github.io/pocket-gym/) の改善担当です。
             今日1日で1件だけ、小さく安全な改善を実装してPull Requestを作ってください。

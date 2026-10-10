@@ -82,4 +82,15 @@ for f in index.html app/index.html; do
   fi
 done
 
+echo "-- improve.yml の allowedTools に危険な全体ワイルドカードがないかの検出 --"
+# improve.yml は不特定多数が書いたX返信・Issue本文を「信用できない入力」として
+# 書き込み権限ありのAIエージェントに読ませる。Bash(gh:*)/Bash(git:*)/Bash(node:*) のような
+# 全体ワイルドカードを許すと、プロンプト注入で gh secret / gh api / gh workflow run /
+# gh pr merge / node -e 等の任意実行まで通ってしまうため禁止する。
+if [ -f .github/workflows/improve.yml ] && grep -nE '^\s*claude_args:' .github/workflows/improve.yml | grep -qE 'Bash\((gh|git|node):\*\)'; then
+  grep -nE '^\s*claude_args:' .github/workflows/improve.yml
+  echo "improve.yml の allowedTools に Bash(gh:*)/Bash(git:*)/Bash(node:*) のような全体ワイルドカードが見つかりました。禁止です。"
+  exit 1
+fi
+
 echo "OK: 禁止パターンは検出されませんでした"
