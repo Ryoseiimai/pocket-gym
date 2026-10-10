@@ -32,7 +32,7 @@
 | キーワード・プロモーション用テキスト | 正本どおり |
 | サポートURL・マーケティングURL | https://ryoseiimai.github.io/pocket-gym/ |
 | 著作権 | 2026 Ryosei Imai |
-| 審査連絡先 | Ryosei Imai / +81 90-3433-5181 / kaeru3160@gmail.com |
+| 審査連絡先 | Ryosei Imai / （App Store Connect に登録済み・非公開） |
 | デモアカウント・審査メモ | 不要（`demoAccountRequired=false`）。メモは正本全文 |
 | コンテンツ配信権 | `DOES_NOT_USE_THIRD_PARTY_CONTENT` |
 | 価格 | 無料。基準地域JPNの手動価格と174地域の自動価格を読み戻し、すべて0を確認 |
