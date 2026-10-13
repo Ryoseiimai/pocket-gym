@@ -413,6 +413,9 @@ function renderToday() {
     el("h2", {}, "今日のメニュー"),
     coachRow(),
     doneToday ? notice("今日はもう完了しています。おつかれさまでした。") : null,
+    doneToday
+      ? notice(`連続${currentStreak(state.sessions, todayStr())}日 / 今週${weeklySessionCount(state.sessions, todayStr())}回`)
+      : null,
   ];
 
   if (menu.length === 0) {
