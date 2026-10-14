@@ -76,6 +76,13 @@ test("planFor は最低回数/秒数を下回らない", () => {
   assert.ok(plan.amount >= 5);
 });
 
+test("planFor の休憩秒は種目の難しさが高いほど長い", () => {
+  const reps = { unit: "reps" };
+  assert.deepEqual([1, 2, 3].map((d) => planFor({ ...reps, difficulty: d }, 0).restSeconds), [45, 60, 75]);
+  const timed = { unit: "seconds" };
+  assert.deepEqual([1, 2, 3].map((d) => planFor({ ...timed, difficulty: d }, 0).restSeconds), [20, 25, 30]);
+});
+
 test("hashString は同じ文字列に対して常に同じ値を返す", () => {
   assert.equal(hashString("abc"), hashString("abc"));
   assert.notEqual(hashString("abc"), hashString("abd"));

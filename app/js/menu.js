@@ -19,6 +19,8 @@ const BASE_SETS = 3;
 const MAX_SETS = 4;
 const REST_SECONDS_REPS = 45;
 const REST_SECONDS_TIMED = 20;
+const REST_SECONDS_PER_DIFFICULTY_REPS = 15; // 種目の難しさ(1-3)が1上がるごとに休憩を足す
+const REST_SECONDS_PER_DIFFICULTY_TIMED = 5;
 
 /** 文字列から決定的な32bit整数を作る(FNV-1aベース) */
 export function hashString(str) {
@@ -79,12 +81,13 @@ function levelOf(exerciseState, id) {
 /** 種目1件分のセット・回数(秒数)・休憩秒を、現在のレベルから計算する */
 export function planFor(exercise, level) {
   const sets = BASE_SETS;
+  const extra = Math.max(0, Math.min(3, exercise.difficulty || 1) - 1);
   if (exercise.unit === "seconds") {
     const seconds = Math.max(MIN_SECONDS, BASE_SECONDS + level * SECONDS_PER_LEVEL);
-    return { unit: "seconds", sets, amount: seconds, restSeconds: REST_SECONDS_TIMED };
+    return { unit: "seconds", sets, amount: seconds, restSeconds: REST_SECONDS_TIMED + extra * REST_SECONDS_PER_DIFFICULTY_TIMED };
   }
   const reps = Math.max(MIN_REPS, BASE_REPS + level * REPS_PER_LEVEL);
-  return { unit: "reps", sets, amount: reps, restSeconds: REST_SECONDS_REPS };
+  return { unit: "reps", sets, amount: reps, restSeconds: REST_SECONDS_REPS + extra * REST_SECONDS_PER_DIFFICULTY_REPS };
 }
 
 /** 部位ローテーション内で目的に合う種目を優先。同点はシード順を保つ。 */
