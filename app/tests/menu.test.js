@@ -191,3 +191,12 @@ test("目的別メニューは同条件でも変わり、決定性と部位の�
 test("ダンベルロウの易しい代替に押す種目を指定しない", () => {
   assert.equal(EXERCISES.find((e) => e.id === "db-row").easierId, null);
 });
+
+test("planFor: 休憩秒は種目のきつさで増減する", () => {
+  const reps = (difficulty) => planFor({ unit: "reps", difficulty }, 0).restSeconds;
+  const timed = (difficulty) => planFor({ unit: "seconds", difficulty }, 0).restSeconds;
+  assert.ok(reps(1) < reps(2) && reps(2) < reps(3));
+  assert.equal(reps(2), 45);
+  assert.equal(timed(2), 20);
+  assert.ok(timed(1) > 0);
+});
