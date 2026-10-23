@@ -115,7 +115,7 @@ python3 -m http.server 8080
 ## iOS でビルドする
 
 Web 本体は引き続き依存ゼロです。iOS 外殻だけ Capacitor 8 と Swift Package Manager を使います。
-必要なものは macOS、Xcode 26 以降（iOS Simulator SDK を含む）、Node.js 22 以降と npm です。対応 OS は iOS 15 以降、iPhone・縦向き専用です。
+必要なものは macOS、Xcode 26 以降（iOS Simulator SDK を含む）、Node.js 22.23.4 以降と npm です。対応 OS は iOS 15 以降、iPhone・縦向き専用です。
 
 リポジトリのルートで実行します。シミュレータ向けのビルドには Apple Developer の有料契約や配布用証明書は不要です。
 
