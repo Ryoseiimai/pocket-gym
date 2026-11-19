@@ -45,7 +45,7 @@ jobs:
           echo "date=${today}" >> "$GITHUB_OUTPUT"
           echo "run=true" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         if: steps.gate.outputs.run == 'true'
         with:
           fetch-depth: 0
